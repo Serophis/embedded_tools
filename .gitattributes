@@ -1,0 +1,5 @@
+communs/figures/eseoLogo.png filter=lfs diff=lfs merge=lfs -text
+communs/figures/projectLogo.png filter=lfs diff=lfs merge=lfs -text
+communs/figures/clientLogo.png filter=lfs diff=lfs merge=lfs -text
+communs/figures/companyLogo.png filter=lfs diff=lfs merge=lfs -text
+doc/qualite/modeles/Java/logoEntrepriseCompatibleDoxygen.jpg filter=lfs diff=lfs merge=lfs -text

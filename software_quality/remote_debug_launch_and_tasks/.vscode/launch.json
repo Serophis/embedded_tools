@@ -1,0 +1,49 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Attach to gdbserver",
+            "type": "gdb",
+            "request": "attach",
+            "executable": "YOUR_EXECUTABLE",
+            "target": "${env:TARGET_ADDRESS}:${env:GDB_TARGET_PORT}",
+            "remote": true,
+            "cwd": "${workspaceRoot}",
+            "stopAtConnect": true,
+            "stopAtEntry": false,
+            "gdbpath": "/bin/gdb-multiarch",
+            "printCalls": true,
+        },
+        {
+            "name": "Start gdbserver and attach",
+            "type": "gdb",
+            "request": "attach",
+            "executable": "YOUR_",
+            "target": "${env:TARGET_ADDRESS}:${env:GDB_TARGET_PORT}",
+            "remote": true,
+            "cwd": "${workspaceRoot}",
+            "stopAtConnect": true,
+            "stopAtEntry": false,
+            "gdbpath": "/bin/gdb-multiarch",
+            "printCalls": true,
+            "preLaunchTask": "start_remote_gdbserver_EASI"
+        },
+        {
+            "name": "Rebuild, and attach to gdbserver",
+            "preLaunchTask": "build_all_debug_update_and_start_gdbserver_EASI",
+            "type": "gdb",
+            "request": "attach",
+            "executable": "YOUR_",
+            "target": "${env:TARGET_ADDRESS}:${env:GDB_TARGET_PORT}",
+            "remote": true,
+            "cwd": "${workspaceRoot}",
+            "stopAtConnect": true,
+            "stopAtEntry": false,
+            "gdbpath": "/bin/gdb-multiarch",
+            "printCalls": true,
+        },
+    ]
+}

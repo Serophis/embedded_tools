@@ -1,0 +1,43 @@
+\newpage
+
+\setglossarysection{section} % Display the glossary, see the documentation for the options
+\printglossary[title=Dictionnaire du domaine]  %\label{dictionnaire_domaine}
+
+\newpage
+
+\textbf{Table de correspondance Spécification-Conception}
+\newline
+
+\begin{longtable}{|l|l|}
+    
+    \hline
+    \endfirsthead
+
+    % \hline \multicolumn{2}{|r|}{{\textbf{Suite à la page suivante...}}} \\ \hline
+    % \endfoot
+
+    % \hline \multicolumn{2}{|l|}{{\textbf{...Suite de la page précédente}}} \\ \hline
+    % \endhead
+
+    \hline
+    \endlastfoot
+
+    \textbf{Terme utilisé en spécification}   & \textbf{Terme correspondant en conception}                          \\
+    \hline
+    \textbf{IdEcran}                                                & \textbf{ScreenId}                             \\
+    \hline
+    IdEcranGraphique                                                & SCREEN\_ID\_CHART                             \\
+    IdEcranDisponibilite                                            & SCREEN\_ID\_AVAILABILITY                      \\
+    \hline
+    \textbf{IdPopUp}                                                & \textbf{ValidatePopUpId}                      \\
+    \hline
+    IdPopUpConnexionPerdue                                          & CONNECTION\_LOST\_POP\_UP\_ID                 \\
+    IdPopUpSimulationTerminee                                       & SIMULATION\_ENDED\_POP\_UP\_ID                \\
+    \hline
+    \multicolumn{2}{|l|}{{      \textit{De \complete vers \complete}}}                 \\
+    \hline
+    mAJConsigneTempIHMSHM(IdRoom, ValeurTemp)        & updateUISHM()\\
+    mAJTempIHMSHM(IdRoom, ValeurTemp)                & updateUISHM()\\
+\end{longtable}   
+%\renewcommand{\glossarypreamble}{}
+\glsaddallunused

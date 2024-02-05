@@ -1,0 +1,26 @@
+@startuml
+[*] --> NotShooting
+
+state "Dépôt - GIT" as NotShooting {
+  state "Valider les modifications" as validModif
+  state "Synchroniser les changements" as Synchro
+
+  [*] --> validModif
+  validModif --> Synchro
+}
+state "Mise à jour de l'ENTP - Redmine" as MAJ{
+  state "Vérifier le dépôt" as Verif
+  state "Editer la demande" as Edit
+  state "Saisir le temps" as Saisie
+
+  Synchro --> Verif
+  Verif --> Edit
+  Edit --> Saisie
+}
+Saisie --> [*]
+note right of validModif : Procédure de dépôt GIT
+note right of NotShooting : Edition d'un document
+center footer
+© 2023 Diagram by Eliot Coulon is licensed under CC BY-NC-SA 4.0
+end footer
+@enduml 

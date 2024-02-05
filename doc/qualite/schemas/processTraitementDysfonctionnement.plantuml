@@ -1,0 +1,33 @@
+@startuml
+|Détecteur|
+start
+:Détecter\nun dysfonctionnement;
+if (Nouveau ?) then (oui)
+    :Créer le \ndysfonctionnement\nsur l'ENTP;
+else (non)
+    :MAJ du\ndysfonctionnement\nsur l'ENTP;
+endif
+
+|Entité compétente|
+:Attendre prise en charge et assignation;
+if (Pris en charge ?) then (non)
+    :Renseigner non\nprise en charge du\ndysfonctionnement;
+    note right: Fermé
+else (oui)
+    :Assigner correcteur\nau dysfonctionnement;
+    |Correcteur|
+    :Prend en charge\nle dysfonctionnement;
+    note right: En cours
+|Correcteur|
+if (Succès) then (oui)
+    :Résoudre le\ndysfonctionnement;
+    note left: Résolu
+else (non)
+    :Renseigner insolvabilité\ndu dysfonctionnement;
+    note left: Fermé
+endif
+endif
+center footer 
+© 2023 Diagram by Eliot Coulon is licensed under CC BY-NC-SA 4.0
+end footer
+@enduml

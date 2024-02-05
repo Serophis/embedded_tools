@@ -1,0 +1,119 @@
+\ProvidesPackage{FrontPage}
+\RequirePackage{Parameter}
+\RequirePackage{kvoptions}
+\usepackage{colortbl}
+\RequirePackage[export]{adjustbox} % http://ctan.org/pkg/adjustbox
+
+\DeclareStringOption[]{projectName}[]
+\DeclareStringOption[]{documentSubject}[]
+\DeclareStringOption[]{clientName}[]
+\DeclareStringOption[]{teamCompany}[]
+\DeclareStringOption[black]{textColor}[]
+\DeclareStringOption[black]{ruleColor}[]
+\DeclareStringOption[]{documentRevision}[]
+\DeclareStringOption[]{documentVersion}[]
+\DeclareStringOption[]{documentState}[]
+\DeclareStringOption[]{documentManager}[]
+\DeclareStringOption[projectLogo.png]{projectLogo}[]
+\DeclareStringOption[clientLogo.png]{clientLogo}[]
+\DeclareStringOption[companyLogo.png]{companyLogo}[]
+
+\ProcessKeyvalOptions*
+
+\graphicspath{{../../../communs/figures/}}
+
+\fancypagestyle{} % No header and footer for this page
+{
+    \fancyhf{}
+    \fancyrf{}
+}
+
+\makeatletter
+\renewcommand\maketitle{
+    \addtocounter{page}{-1} % Not count as page 1
+    \thispagestyle{empty}
+
+    \begin{figure}[t]
+        \ifx\FrontPage@logoLeft\empty
+        \else
+            \includegraphics[height=100pt, valign=t]{\FrontPage@companyLogo}
+        \fi
+        \hspace*{\fill}
+        \ifx\FrontPage@logoRight\empty
+        \else
+            \includegraphics[height=100pt, valign=t]{\FrontPage@clientLogo}
+        \fi
+    \end{figure}
+
+    \vspace*{\fill}
+
+    \begin{center}
+        \textcolor{\FrontPage@textColor}{
+            {\huge \textsc{\bf \@title}}
+            \vspace{0.5cm}\\
+            \ifx\FrontPage@documentSubject\empty
+            \else
+                {\Large\bf {\FrontPage@documentSubject}}\\
+            \fi
+        }
+    \end{center}
+
+    \vspace*{\fill}
+
+    % UPDATE
+    \ifx\FrontPage@logoCenter\empty
+    \else
+        \begin{figure}[ht]
+            \centering
+            \includegraphics[height=0.35\linewidth]{\FrontPage@projectLogo}
+        \end{figure}
+    \fi
+    \vspace*{\fill}
+
+    \noindent
+    \textcolor{\FrontPage@ruleColor}{\vrule}\hspace{0.25cm}\begin{minipage}[b]{0.5\textwidth-0.25cm}
+        \raggedright
+        \textcolor{\FrontPage@textColor}{
+            \textbf{\@author}
+            \ifx\FrontPage@projectName\empty
+            \else
+                \\{\FrontPage@projectName}
+            \fi
+            \ifx\FrontPage@clientName\empty
+            \else
+                \\{\FrontPage@clientName}
+            \fi
+            \ifx\FrontPage@teamCompany\empty
+            \else
+                \\{\FrontPage@teamCompany}
+            \fi
+        }
+    \end{minipage}
+    \hspace*{\fill}
+    \begin{minipage}[b]{0.5\textwidth-0.25cm}
+        \raggedleft
+        \textcolor{\FrontPage@textColor}{
+            \ifx\FrontPage@documentVersion\empty
+            \else
+                Version : {\FrontPage@documentVersion}\\
+            \fi
+            \ifx\FrontPage@documentRevision\empty
+            \else
+                Révision : {\FrontPage@documentRevision}\\
+            \fi
+            \ifx\FrontPage@documentRevision\empty
+            \else
+                État du document : {\FrontPage@documentState}\\
+            \fi
+            \ifx\FrontPage@documentManager\empty
+            \else
+                Responsable du document : {\FrontPage@documentManager}\\
+            \fi
+            \@date
+        }
+    \end{minipage}
+    \clearpage
+    \addtocounter{page}{-1}
+}
+
+\makeatother

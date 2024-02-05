@@ -1,0 +1,118 @@
+<head></head>
+
+<body></body>
+<script>
+	// @ts-check
+	/**
+	 * @type {import("./Model.js").Model<false>}
+	 */
+	const model =
+	{
+		name: "Conception générale B2 2024",
+		classes: String.raw`
+				class Alice {
+					AliceHello()			
+				}
+
+				class Bob {
+					BobHello()
+				}
+
+				enum ScreenId {
+					SCREEN_ID_HOME						'' Identifiant de l'écran d'accueil.
+					SCREEN_ID_MANAGEMENT				'' Identifiant de l'écran Management.
+					SCREEN_ID_CHART						'' Identifiant de l'écran Graphique.
+					SCREEN_ID_AVAILABILITY				'' Identifiant de l'écran Disponibilité.
+				}
+				
+				Alice *-> Bob : AliceHello()
+
+			`,
+		objects: [
+			{
+				name: "Alice",
+				class: "Alice",
+				isActor: true,
+				behavior: String.raw`
+						[*] -> Waiting : / 
+						Waiting : / AliceHello()
+					`,
+			},
+			{
+				name: "Bob",
+				class: "Bob",
+				isActor: true,
+				behavior: String.raw`
+						[*] -> Waiting : / 
+						Waiting : / BobHello()
+					`,
+			}
+		],
+		connectorByName: {
+			C0: {
+				ends: [
+					"Alice",
+					"Bob",
+				],
+				possibleMessages: {
+					forward: [
+						"AliceHello()",
+					],
+					backward: [
+						"BobHello()",
+					],
+				},
+			},
+		},
+		interactions: {
+			"Hello Alice et bob": String.raw`
+					actor Alice
+					actor Bob
+					Alice -> Bob : AliceHello()
+					Bob -> Alice : BobHello()
+                `,
+		},
+		settings: {
+			interface: {
+				displayedObjects: [
+					"Bob",
+					"Alice",
+				],
+			},
+			display: {
+				hideClasses: false,
+				hidePackages: false,
+				hideMethods: false,
+				hideOperations: false,
+				hideStateMachines: true,
+				showPseudostateInvariants: false,
+				showPorts: false,
+				showTransitions: false,
+				showEndNames: false,
+				showMethodsAsActivities: false,
+				showActorsAsObjects: false,
+				showComments: false,
+			},
+			semantics: {
+				fireInitialTransitions: true,
+				autoFireAfterChoice: true,
+				autoReceiveDisabled: false,
+				considerGuardsTrue: true,
+				checkEvents: true,
+				keepOneMessagePerTrigger: true,
+				enableEventPools: true,
+				matchFirst: true,
+				symbolicValues: false,
+				reactiveSystem: false,
+				synchronousCommunication: false,
+				withDBM: false,
+			},
+		},
+		historyCauses: [
+		],
+	}
+		;
+	document.write(`
+		<iframe width="100%" height="100%" src='https://418252c5e69e7fe6c6c1e4aedba4dafe.kher.nl/AnimUML.html#${encodeURIComponent(JSON.stringify(model)).replace(/'/g, '%27')}'></iframe>
+	`);
+</script>

@@ -1,0 +1,61 @@
+\newpage
+\subsection{Fonctions principales développées} %2.3 Fonctions principales développées
+
+Ce chapitre présente les fonctionnalités principales développées dans les incréments 1 et 2 en utilisant
+une démarche par cas d'usage et par Cas d’Utilisation (CU).
+
+\subsubsection{Rappel sur les cas d'usage}\label{rappelCasUsage}
+%2.3.1 Rappel sur les cas d'usage
+
+Les cas d'usage recensent les étapes essentielles du cycle de vie d'un produit depuis sa fabrication 
+jusqu'à l'élimination ou le recyclage de ce produit.
+À chaque étape du cycle de vie correspond un cas d'usage (si cette étape induit des
+fonctionnalités à définir pour le produit considéré). Pour chaque cas d'usage, plusieurs cas
+d'utilisation distincts peuvent être définis. \\
+
+Parmi les cas d'usage, on retrouve généralement ceux de fabrication du produit (comprenant ou
+non les activités de test du produit fabriqué), de conditionnement (paramétrage éventuel,
+expédition et transport), de commercialisation (correspondant par exemple à un paramétrage éventuel, un mode de démonstration
+ou une installation sur site), d'utilisation (par le ou les utilisateurs), de maintenance (SAV ou
+diagnostic), de désinstallation et de recyclage (élimination ou valorisation).
+
+\subsubsection{Rappel sur les cas d'utilisation} %2.3.2 Rappel sur les cas d'utilisation
+
+Un Cas d’Utilisation (CU) représente un ensemble d’interactions entre un ou des acteurs et le
+système à spécifier. Un cas d'utilisation étant souvent lié à un ou parfois plusieurs cas d'usage.
+Un CU est principalement décrit par un scénario d’utilisation (nommé scénario nominal), scénario
+d’une utilisation représentative du système. Ces CU sont ensuite détaillés jusqu’à un niveau de
+décomposition suffisant pour décrire les fonctions attendues du système.
+
+\paragraph{Représentation graphique des CU} %2.3.2.1 Représentation graphique des CU
+
+Les CU peuvent être représentés sous forme graphique telle que décrite par la Figure \ref{fig:explication_diagramme_cas_utilisation}. Les acteurs directs sont représentés sous forme de petits personnages. Dans les bulles sont représentés les cas d’utilisation. Un trait entre un acteur et un CU indique que l’acteur participe à ce CU. Les liens hachurés entre CU, préfixés par le mot <<include>>, indiquent que ce CU fait appel à d’autres CU. On parle alors de sous-cas d’utilisation. Les liens hachurés entre CU, préfixés par le mot <<extend>>, indiquent qu’il s’agit d’une extension d’un CU, c'est à dire un CU qui ne se déclenche que sous certaines conditions.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{explication_diagramme_cas_utilisation}
+    \caption{Légende explicative d'un diagramme de cas d'utilisation}
+    \label{fig:explication_diagramme_cas_utilisation}
+\end{figure}
+
+\bigskip
+\paragraph{Représentation textuelle des CU} %2.3.2.2 Représentation textuelle des CU
+
+La description textuelle des cas d’utilisation est souvent présentée sous forme d’un tableau constitué des champs suivants :
+\input{sections/2.DescriptionGenerale/CU/CU_explicationTextuelle.tex}
+
+\subsubsection{Résumé des cas d'usage considérés} \label{section:resume_cas_d'usage}%2.3.3 Résumé des cas d'usage considérés
+
+\complete Résumer les cas d'usage considérés dans ce document :
+\begin{itemize}
+    \item \complete Utilisation...
+    \item \complete Maintenance...
+    \item \complete Debug...
+    \item \complete ...
+\end{itemize}
+
+\newpage
+\input{sections/2.DescriptionGenerale/CU/CU_strategique.tex}
+
+\newpage
+\input{sections/2.DescriptionGenerale/CU/CU_exemple.tex}

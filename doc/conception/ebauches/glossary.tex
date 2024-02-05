@@ -1,0 +1,49 @@
+\newglossaryentry{algorithme}
+{
+    name={Algorithme},
+    description={Module logiciel qui régule la consommation du foyer.},
+    text={algorithme},
+}
+
+\newglossaryentry{CommandeApp}
+{
+    name={\underline{Commande appareil}},
+    description={Ensemble des actionneurs permettant de changer l'état des actionneurs suite à une action de \complete.
+    \begin{itemize}
+        \item \underline{Id<TypeCommande><TypeApp><Piece>} : correspond à l'actionneur <TypeCommande> lié à l'appareil <TypeApp> se trouvant dans la pièce <Pièce>.
+        \begin{itemize}
+            \item {<TypeCommande>} : correspond aux différents types d'actionneurs possible que le \complete peut actionner. Ces types peuvent être:    
+            \begin{itemize}
+                \item \underline{BoutonSHA} : correspond à l'actionneur depuis \complete.
+                \item \underline{BoutonSHM} : correspond à l'actionneur depuis \complete.
+                %\item \underline{MenuDeroulant} : correspond à l'actionneur se nommant menu déroulant.
+                \item \underline{Potentiomètre} :  correspond à l'actionneur se nommant potentiomètre depuis \complete.
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+    },
+    text={Commande appareil},
+}
+
+\newglossaryentry{IdBouton}
+{
+    name={\underline{IdBouton}},
+    description=
+    {
+        Ensemble des identifiants représentant les différents boutons présents sur les écrans et les pop-ups s'affichant sur \appAndroid.
+        \begin{itemize}
+            \item \underline{IdBoutonDecreConsigneTemperaturePiece} : correspond à l'identifiant du bouton permettant de décrémenter la consigne de température de la pièce à laquelle est associée le bouton sur \appAndroid.
+            \item \underline{IdBoutonIncreConsigneTemperaturePiece} : correspond à l'identifiant du bouton permettant d'incrémenter la consigne de température de la pièce à laquelle est associée le bouton présent sur \appAndroid.
+            \item \underline{IdBoutonEcranAccueil} :  correspond à l'identifiant du bouton permettant de demander l'affichage de EcranAccueil.
+            \item \underline{IdBoutonEcranManagement} :  correspond à l'identifiant du bouton permettant de demander l'affichage de EcranManagement.
+            \item \underline{IdBoutonEcranDisponibilite} : correspond à l'identifiant du bouton permettant de demander l'affichage de EcranDisponibilite.
+            \item \underline{IdBoutonEcranGraphique} :  correspond à l'identifiant du bouton permettant de demander l'affichage de EcranGraphique.
+            \item \underline{IdMenuSelectionProfilDispo} :  correspond à l'identifiant du menu déroulant permettant de sélectionner un profil de disponibilité.
+            \item \underline{IdMenuSelectionPlanTaches} :  correspond à l'identifiant du menu déroulant permettant de sélectionner une planification des tâches.
+            \item \underline{IdMenuSelectionAlgo} :  correspond à l'identifiant du menu déroulant permettant de sélectionner un algorithme.
+            \item \underline{IdBoutonDemarrerSimulation} :  correspond à l'identifiant du bouton permettant de démarrer une \complete.
+            \item \underline{IdBoutonPopUpValider} : correspond à l'identifiant du bouton permettant de valider l'action et fermer un pop-up.
+        \end{itemize}
+    },
+    text={IdBouton},    
+}

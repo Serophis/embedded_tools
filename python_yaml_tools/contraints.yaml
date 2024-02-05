@@ -1,0 +1,5 @@
+constraints:
+  - name: "Contrainte 1"
+    description: "La température d'utilisation doit être comprise entre TODO °C et TODO °C"
+  - name: "Contrainte 2"
+    description: "La vitesse de TRUC doit être inférieure à TODO m/s"

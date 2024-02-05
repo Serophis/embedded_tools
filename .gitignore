@@ -1,0 +1,12 @@
+# Build folder
+build
+# Output folder for Doxygen
+html
+# Output folder for .pdf
+livrables
+# PlantUML outputs before conversion to PDF
+*.eps
+# clangd folder
+.cache
+# clangd trace file
+clangd_trace.json

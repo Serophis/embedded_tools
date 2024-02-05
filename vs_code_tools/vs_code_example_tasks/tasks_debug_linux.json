@@ -1,0 +1,75 @@
+// Some examples of tasks.json for Visual Studio Code, be sure to adapt them to your project and your needs
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build_all_debug",
+            "type": "shell",
+            "command": [
+                "cd YOUR_PROJECT;",
+                "YOUR BUILD COMMAND DEBUG"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Build with debug symbols and with no optimizations"
+        },
+        {
+            "label": "build_all_release",
+            "type": "shell",
+            "command": [
+                "cd YOUR_PROJECT;",
+                "YOUR BUILD COMMAND RELEASE"
+            ],
+            "detail": "Build with no debug symbols and with optimizations"
+        },
+        {
+            "label": "remote_update_executable",
+            "type": "shell",
+            "command": [
+                "source ~/.bashrc;", // This might not work, sometime you have to restart WSL2 to reload the .bashrc in tasks terminals
+                "cd YOUR_PROJECT;",
+                "sshpass -p ${env:TARGET_PASSWORD} scp ${env:TARGET_LOGIN}@${env:TARGET_ADDRESS}:/home/${env:TARGET_LOGIN}"
+            ],
+            "detail": "Transfer the executable to the target using sshpass scp"
+        },
+        {
+            "label": "start_remote_gdbserver",
+            "type": "shell",
+            "command": "sshpass -p ${env:TARGET_PASSWORD} ssh ${env:TARGET_LOGIN}@${env:TARGET_ADDRESS} 'sudo gdbserver :{env:GDB_TARGET_PORT} ./${env:EXECUTABLE_NAME} &'",
+            "detail": "Start gdbserver on the target on port {env:GDB_TARGET_PORT}",
+            "isBackground": true
+        },
+        {
+            "label": "build_all_debug_and_update",
+            "type": "shell",
+            "dependsOn": [
+                "build_all_debug",
+                "remote_update_executable"
+            ],
+            "dependsOrder": "sequence",
+            "detail": "Build with debug symbols and with no optimizations, then transfer the executable to the target using sshpass scp"
+        },
+        {
+            "label": "build_all_release_and_update",
+            "type": "shell",
+            "dependsOn": [
+                "build_all_release",
+                "remote_update_executable"
+            ],
+            "dependsOrder": "sequence",
+            "detail": "Build with no debug symbols and with optimizations, then transfer the executable to the target using sshpass scp"
+        },
+        {
+            "label": "build_all_debug_update_and_start_gdbserver",
+            "type": "shell",
+            "dependsOn": [
+                "build_all_debug_and_update",
+                "start_remote_gdbserver"
+            ],
+            "dependsOrder": "parallel",
+            "detail": "Build with no debug symbols and with optimizations, then transfer the executable to the target using sshpass scp and stat gdb server"
+        }
+    ]
+}

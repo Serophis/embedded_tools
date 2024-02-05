@@ -1,0 +1,25 @@
+@startuml
+skinparam shadowing false
+skinparam ActivityBackgroundColor LightGrey
+title Diagramme d'activité des cycles de développement du projet
+(*) --> "Initialisation"
+"Initialisation" -> "Spécification I1"
+"Spécification I1" --> "Conception I1"
+"Conception I1" --> "Réalisation I1"
+"Réalisation I1" --> "Test I1"
+"Conception I1" ..> "Spécification I1"
+"Test I1" ..> "Conception I1"
+"Test I1" ..> "Réalisation I1"
+"Test I1" -> "Spécification I2"
+"Spécification I2" --> "Conception I2"
+"Conception I2" --> "Réalisation I2"
+"Réalisation I2" --> "Test I2"
+"Test I2" -> "Recette"
+"Conception I2" ..> "Spécification I2"
+"Test I2" ..> "Conception I2"
+"Test I2" ..> "Réalisation I2"
+"Recette" --> (*)
+center footer
+© 2023 Diagram by Eliot Coulon, based on the work of Clément Le Goffic, is licensed under CC BY-NC-SA 4.0
+end footer
+@enduml

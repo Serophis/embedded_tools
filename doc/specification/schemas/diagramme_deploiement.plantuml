@@ -1,0 +1,17 @@
+@startuml
+'scale 1280*900
+skinparam monochrome true
+skinparam shadowing false
+
+'title Architecture matérielle et logicielle
+
+package SàE {
+    node Server {
+        component CApp
+    }
+    node AndroidDevice {
+        component AndroidApp
+    }
+}
+
+@enduml

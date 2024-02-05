@@ -1,0 +1,7 @@
+features:
+  - name: Ma fonctionnalité 1
+    description: Une description de ma fonctionnalité 1
+    use_case: Le use case de ma fonctionnalité 1
+  - name: Ma fonctionnalité 2
+    description: Une description de ma fonctionnalité 2
+    use_case: Le use case de ma fonctionnalité 2

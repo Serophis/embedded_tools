@@ -1,0 +1,2253 @@
+%-----------------------------------
+% Plan d'assurance qualité logicielle
+% Originalement écrit par Jérôme Delatour
+% Adapté en LaTeX par Clément Le Goffic en utilisant des artefacts de code de Camille Constant et Thomas Cravic
+% ProSE (2022)
+% Repris par Eliot Coulon et Théo Faucher (2023) 
+% Auteurs : J. Delatour, C. Constant, T.Cravic, C. Le Goffic, E. Coulon, T. Faucher
+%
+%-----------------------------------
+
+\documentclass[a4paper,11pt,titlepage]{article}
+
+\usepackage[english,french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% Commun Edouard/Clément
+\usepackage{xspace, graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{lastpage}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{color, soul}
+\usepackage{fancyhdr}
+\usepackage{plantuml}
+\usepackage{longtable}
+
+% Spé Edouard
+\usepackage{comment}
+
+% Spé Théo
+\usepackage[outdir=build/epstopdf/, update]{epstopdf}
+
+% Spé Clément
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{supertabular}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{url}
+%------------------------------------
+%              Variables
+%              You must complete all these parameters to personalize your document
+%------------------------------------
+% Version à mettre à jour manuellement (penser à aussi update la table des versions)
+\input{../../communs/setup.tex}
+
+\newcommand{\version}{1.1}
+\newcommand{\revision}{0}
+% A propos de l'équipe/du projet
+
+% A propos de ce document précisément
+\newcommand{\documentName}{Plan d'Assurance Qualité et Logiciel}
+\newcommand{\documentNameAbrev}{PAQL}
+\newcommand{\creator}{\RQT}
+\newcommand{\creatorAbrev}{Eliot Coulon}
+
+%\usepackage[
+%            documentSubject     = {\documentName},
+%            documentRef         = {\refPAQL},
+%            documentRevision    = {\revision},
+%            documentVersion     = {\version},
+%            teamName            = {\teamCompany},
+%            ]{../../communs/FooterHeader}
+%------------------------------------
+
+%------------------------------------
+%              Useful command
+%------------------------------------
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
+\newcommand{\ti}[1]{\begin{tabular}[c]{@{}l@{}}#1\end{tabular}} %Create a tab cell that takes cell text as parameter
+%What follows only concern double columns table :
+\newcommand{\tl}[2]{\ti{#1} & \ti{#2}} %Create a tab line that take two cell text as parameters
+%------------------------------------
+
+%------------------------------------
+%              Parameters for header and footer
+%------------------------------------
+\pagestyle{fancy}
+\graphicspath{{../figures/}{../schemas/}{../../../communs/figures/}}
+\setlength{\hoffset}{-40pt}
+\setlength{\topmargin}{-70pt}
+\setlength{\headsep}{10pt}
+\renewcommand{\headheight}{80pt}
+\renewcommand{\headwidth}{450pt}
+\setlength{\textwidth}{450pt}
+\setlength{\textheight}{694pt}
+\renewcommand{\footrulewidth}{0.1mm}
+\fancyhf{}
+        \fancyhead[LO]{\includegraphics[height=15pt]{companyLogo.png}  
+                       \includegraphics[height=13pt]{eseoLogo.png}}
+        \fancyhead[CO]{\small{\documentName}}
+        \fancyhead[RO]{\small{Réf. \refPAQL}}
+        \fancyfoot[LO]{\sl {\it Version {\version} \textbf{--} Révision {\revision}}}
+        \cfoot{\copyright {2023} Droits réservés {\teamCompany}}
+        \fancyfoot[RO]{\thepage/\pageref{LastPage}}
+\setcounter{tocdepth}{3}
+%------------------------------------s
+
+
+%----------------------------------------
+%             Parameters for adding a subsubsubsection, command and
+%             make it appear in the table of content
+%             It also modify the paragraph ans subparagraph command
+%----------------------------------------
+
+\titleclass{\subsubsubsection}{straight}[\subsection]
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\renewcommand\theparagraph{\thesubsubsubsection.\arabic{paragraph}} % optional; useful if paragraphs are to be numbered
+\titleformat{\subsubsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{5}{\z@}%
+  {3.25ex \@plus1ex \@minus.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{6}{\parindent}%
+  {3.25ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\def\toclevel@subsubsubsection{4}
+\def\toclevel@paragraph{5}
+\def\toclevel@paragraph{6}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+\def\l@paragraph{\@dottedtocline{5}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{6}{14em}{6em}}
+\makeatother
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+%------------------------------------
+\frenchbsetup{StandardLists=true}
+\hypersetup{pdfborder=0 0 0}
+\usepackage{color}
+
+%----------------------------------------
+%       DOCUMENT
+%----------------------------------------
+
+\begin{document}
+
+%---------------------------------------
+
+\sloppy%
+% Modifie l'espacement vertical entre les lignes d'un tableau (tabular)
+\renewcommand{\arraystretch}{1.1}
+
+%---------------------------------------
+
+\vspace{-2cm}%
+\begin{center}%
+    \vspace*{1cm}
+    \rule[0.5ex]{0.4\textwidth}{0.1mm}\\
+    \vspace*{2mm}
+    {\Huge {\textsc{\bf {\documentName}}}}
+    \vspace{0.4cm}\\
+    {\large\bf {\teamName}}\\
+    {\large\bf {\projectName}}
+
+    \rule[0.5ex]{0.4\textwidth}{0.1mm}
+
+    \vspace{1cm}
+
+\end{center}
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        Responsable du document & {\creator}            \\
+        État du document        & Livrable              \\
+        Version                 & {\version}            \\
+        Révision                & {\revision}           \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\vspace{2cm}
+Le présent document est un document à but pédagogique. Il a été réalisé sous la direction de Jérôme Delatour, en collaboration avec des enseignants et des étudiants de l'option SE du groupe ESEO. \\
+
+Ce document est la propriété de Jérôme Delatour du groupe ESEO. En dehors des activités pédagogiques de l'ESEO, ce document ne peut être diffusé ou recopié sans l’autorisation écrite de son propriétaire (Jérôme Delatour).
+\newpage
+
+\input{tableVersions.tex}
+
+\newpage
+
+%-------------------------------
+
+\tableofcontents
+% alternative pour réduire l'espacement entre les entrées de la table des matières
+% (la valeur numérique peut être adaptée au besoin) :
+%{\setlength{\baselineskip}{0.96\baselineskip}\tableofcontents\par}
+\newpage
+
+%-------------------------------
+% Ajouter toutes les parties les unes après les autres, séparées par un \newpage
+% Exemple :
+% \input{Introduction}
+% \newpage
+\section{But}%1
+\subsection{Objectifs du document}%1.1
+Ce document est un Plan d'Assurance Qualité Logicielle (PAQL) visant à définir toutes les règles,
+les méthodes et les outils utilisés dans le projet {\projectName} en collaboration avec {\clientName} afin de définir et contrôler la qualité du projet.\\
+Ce document poursuit les objectifs suivants :
+\begin{itemize}
+    \item Définir le niveau de qualité attendu par l'équipe projet pour le projet {\projectName}
+    \item Définir les outils utilisés, les processus et procédures à suivre par l'équipe
+          projet tant au niveau organisationnel que technique lors du projet {\projectName}
+\end{itemize}
+Ce document est disponible sur le Référentiel Documentaire Projet (RDP) \cite[{\refPAQL}]{PAQL}.
+
+\subsection{Portée}%1.2
+Ce document est destiné :
+\begin{itemize}
+    \item À l'équipe projet
+    \item Aux consultants de la société Formato
+\end{itemize}
+
+\subsection{Copyright}%1.3
+\input{avertissement.tex}
+
+
+\subsection{Vue d'ensemble}%1.4
+Ce PAQL est structuré suivant les grandes parties proposées par la norme [IEEE\-730\_1998].\\
+La norme IEEE 730 décrit les 24 parties d'un plan d'AQL pour un logiciel :
+\begin{itemize}
+    \item Intention et Portée
+    \item Définitions et Abréviations
+    \item Documents de références
+    \item Survol du plan d'assurance qualité Logicielle
+    \begin{itemize}
+        \item Organisation
+        \item Niveau de criticité du logiciel
+        \item Outils, techniques et méthodologies
+        \item Ressources
+        \item Normes, pratiques et conventions
+        \item Calendriers
+    \end{itemize}
+    \item Activités et tâches de cycle de vie de l'AQL
+    \begin{itemize}
+        \item Rôle de l'assurance de produit
+        \item Rôle de l'assurance du processus
+        \item Assurances sur les activités et les tâches du système de management de la qualité
+        \item Activités et tâches additionnelles
+    \end{itemize}
+    \item Processus et politiques additionnelles
+    \begin{itemize}
+        \item Processus de revue de contrat
+        \item Processus de mesure de la qualité
+        \item Politiques de tests
+              \item Politique de dérogation et de déviation
+              \item Politique d'itération des tâches
+            \end{itemize}
+            \item Enregistrements et rapports de l'AQL
+            \begin{itemize}
+                \item Enregistrements
+                \item Rapports
+            \end{itemize}
+        \end{itemize}
+
+\newpage
+\subsection{Références} %1.5
+\nocite{*} % Include all entries from PAQL.bib
+\begingroup
+\renewcommand{\section}[2]{}
+\bibliographystyle{plain}
+\bibliography{PAQL.bib}
+\endgroup
+
+\newpage
+\section{Gestion}%2
+Cette partie décrit l'organisation, les tâches et les responsabilités en rapport avec les activités d'Assurance Qualité (AQ) du projet \projectName, dont les enjeux sont détaillés dans les sections suivantes.
+\subsection{Organisation}%2.1
+
+\subsubsection{Projet concerné}%2.1.1
+Le projet {\projectName} est un projet à but pédagogique dans le cadre de la formation de cycle ingénieur de l'ESEO. Il est mené par la société fictive {\teamCompany} en collaboration avec l'entreprise {\clientName}. L'objectif de ce projet nommé {\projectName} est de développer un simulateur d'effacement de la consommation énergétique d'un foyer.
+
+\subsubsection{Ressources humaines}%2.1.2
+
+\subsubsubsection{Équipe Projet}%2.1.2.1
+\input{../../communs/equipeProjet.tex}
+
+\subsubsubsection{Client}%2.1.2.2
+Le client est l'entreprise {\clientName}, numéro de SIREN 483 898 672, représentée par trois de ses collaborateurs : David OLIVIER, Dimitri SAINGRE et Emile CADOREL. \\
+
+Fondée en 2005, {\clientName} se positionne comme un acteur du conseil en management et d'expertise technologique. Riche d'un réseau d'entités réparties sur le territoire français, Davidson se développe et est aujourd'hui présente dans 6 pays en Europe et en Amérique du Nord (Canada).
+
+\subsubsubsection{Consultants et auditeurs} \label{sec:ConAud} %2.1.2.3
+Si nécessaire, l'équipe projet pourra faire appel à la société Formato en tant que support technique. Les consultants et leurs compétences privilégiées sont :
+\begin{itemize}
+    \item Jérôme DELATOUR (spécification/conception/qualité/gestion de projet) : \href{mailto:jerome.delatour@eseo.fr}{jerome.delatour@eseo.fr}
+    \item Matthias BRUN (codage Android/tests) : \href{mailto:matthias.brun@eseo.fr}{matthias.brun@eseo.fr}
+    \item Camille CONSTANT (qualité/tests) : \href{mailto:camille.constant@eseo.fr}{camille.constant@eseo.fr}
+    \item Frédéric JOUAULT (codage C/conception) : \href{mailto:frederic.jouault@eseo.fr}{frederic.jouault@eseo.fr}
+\end{itemize}
+Des activités d'audits externes (cf. section \ref{sec:Audits}) seront menées par les auditeurs de la société Formato ou missionnées par elle.
+\subsection{Tâches du projet}%2.2
+\subsubsection{Tâches transversales}%2.2.1
+Les tâches transversales de l'assurance qualité incluent les activités suivantes :
+\begin{itemize}
+    \item Documentation (cf. section \ref{sec:Documentation})
+    \item Revues et audits (cf. section \ref{sec:RevEtAudit})
+    \item Inspections internes (cf. section \ref{sec:InspInternes})
+    \item Validation et tests
+    %\item Activités d'amélioration du processus d'AQ NA en ProSE
+\end{itemize}
+
+\subsubsubsection{Inspections internes} \label{sec:InspInternes} %2.2.1.1
+Des audits internes de conformité seront réalisés régulièrement par le CdP et/ou le RQT afin de détecter d'éventuelles défaillances dans la réalisation du PAQL. Ces contrôles porteront sur la conformité des dépôts, des règles de nommage et de codage ou encore des branches et commit (cf. section \ref{sec:Insp}). Lorsque une défaillance sera détectée, les responsables des documents impactés seront notifiés et il leur sera demandé d'apporter les corrections nécessaires dans les plus brefs délais, que ce soit par leurs propres soin ou par délégation. Une notification apparaîtra sur l'Espace Numérique de Travail du Projet (ENTP) pour suivre la résolution de la défaillance.\\
+
+\subsubsubsection{Validation et test}%2.2.1.2
+Les activités de validation et de test sont définies dans le plan de test \cite[\refPlanTest]{PDT}. Le plan de test a pour objectif d'identifier les informations existantes du projet et les composants qui doivent être testés. Il énumère les exigences d'évaluation à différents niveaux, décrit les stratégies de test qui seront employées, identifie les ressources nécessaires et met en évidence les livrables pour les tests.\\
+% \begin{itemize}
+%     \item Portée du document, termes et abréviations
+%     \item Références
+%     \item Périmètre de test (composants concernés ou non par les tests, 
+%     fonctionnalités testées ou non, critères d'acceptation des tests)
+%     \item Processus et stratégie de test (activités, techniques, outils, procédures de test et gestion des anomalies) 
+%     \item Documents de test et livrables
+%     \item Responsabilités
+%     \item Équipe de test
+%     \item Planning prévisionnel
+% \end{itemize}
+
+\subsubsubsection{Évolution et amélioration du PAQL} %2.2.1.3
+Le PAQL est susceptible d'évoluer au cours du projet, en particulier pour les raisons suivantes :
+\begin{itemize}
+    \item Toutes les informations nécessaires à la rédaction d'un chapitre ou d'un paragraphe ne sont pas connues ou suffisamment stabilisées lors de la rédaction.
+    \item Il s'agit d'une phase du cycle de développement qui sera engagée ultérieurement (cas de la mention « Rédaction réservée »).
+    \item Des événements techniques ou organisationnels nécessitant une prise en compte dans le PAQL peuvent apparaître lors du déroulement du projet (modification d'organisation, mise en place de nouvelles normes ou de procédures ou modification de normes ou procédures existantes...).
+\end{itemize}
+Le PAQL est rédigé par le Responsable Qualité et Test (RQT) de l'équipe projet. Le Chef de Projet (CdP) et le RQT participe aux décisions de modifications. Il incombe au RQT d'effectuer les modifications jugées nécessaires du PAQL. En cas de modifications du PAQL, celui-ci devra être signé à nouveau par les membres de l'équipe projet.
+
+\subsubsection{Tâches par rapport au cycle de développement} %2.2.2
+L'équipe projet suivra un cycle de développement en V en deux incréments. Les activités d'AQ sont décrites par rapport à ce cycle. Le planning et les échéances associées sont disponibles sur l'Espace Numérique de Travail du Projet (ENTP). \\
+
+\bigskip
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=13cm]{cycleDeveloppement}
+    \caption{Diagramme du cycle de développement du projet}
+\end{figure}
+
+\subsubsubsection{Phase d'initialisation du projet} %2.2.2.1
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{|lll|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{3}{|l|}{\cellcolor[HTML]{CCCCCC}\textbf{Phase : Initialisation}}                       \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Objectifs :                                                                                 \\
+                \tabitem Prendre en charge le projet, l'organiser, le planifier et en valider les bases.    \\
+                \tabitem Évaluer les actions nécessaires pour mettre en place le projet.                    \\
+                \tabitem Échanger avec l'équipe sur les règles à définir afin de rédiger le PAQL
+            \end{tabular}}                                                                                  \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Remarques : \\
+            \end{tabular}}                                                                                  \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Acteurs \& responsabilités :                                                                \\
+                \tabitem CdP et RQT                                                                         \\
+                \tabitem Équipe projet pour la signature \\du PAQL \\
+                \tabitem Client
+            \end{tabular}}                     & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Méthodes \& Règles :                                                                        \\
+                \tabitem Règles pour l'utilisation    \\ de l'ENTP\\
+                \tabitem Anticipation et organisation \\des \emph{deadlines} personnelles
+            \end{tabular}} &
+        \begin{tabular}[c]{@{}l@{}}
+            Moyens \& Outils :                \\
+            \tabitem Initialisation du projet \\ sous ENTP \\
+            \tabitem Ressources internet      \\officielles
+        \end{tabular}                                                                 \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités                         \\ d'organisation/pilotage :\\
+                \tabitem Organisation de la       \\réunion de lancement\\
+                \tabitem Organisation de la phase \\ en aval
+            \end{tabular}}          & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités de                        \\ production/soutien :\\
+                \tabitem Élaboration du PAQL        \\
+                \tabitem Mise en place de l'ENTP    \\
+                \tabitem Définition de la démarche  \\ du projet\\
+                \tabitem Initialisation du planning \\et du suivi du projet\\
+                \tabitem Échanges sur le            \\cahier des charges
+            \end{tabular}}             &
+        \begin{tabular}[c]{@{}l@{}}
+            Activités de                      \\ vérification/contrôle :\\
+            \tabitem Réunion de lancement     \\
+            \tabitem Rencontre avec le client \\
+            \tabitem Validation du PAQL
+        \end{tabular}                                                    \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en entrée :    \\
+                \tabitem Wiki Prose et ENTP     \\
+                \tabitem Documents pédagogiques \\
+            \end{tabular}}                                        & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en sortie :   \\
+                \tabitem ENTP                  \\
+                \tabitem Planning prévisionnel \\
+                \tabitem PAQL
+            \end{tabular}}                                        &
+        \begin{tabular}[c]{@{}l@{}}
+            Produits révisés : \\
+            \tabitem N.A.
+        \end{tabular}                                                                                       \\ \hline
+        \multicolumn{3}{|l|}{\begin{tabular}[c]{@{}l@{}}
+            Jalons de la phase :                                                                            \\
+            \tabitem J1 : 07/02/2023 (Explication des règles d'utilisation du gestionnaire de versions)     \\
+            \tabitem J2 : 09/02/2023 (Rencontre avec le client et analyse de la demande)                    \\
+            \tabitem J3 : 03/03/2023 (Mise en place des outils de développement)                            \\
+            \tabitem J4 : 15/05/2023 (Signature du PAQL par tous les membres de l'équipe)
+        \end{tabular}} \\ \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{1}{|l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions de début de phase :
+        \end{tabular}}                                            & \multicolumn{1}{l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions de fin de phase :
+        \end{tabular}}                                            &
+        \begin{tabular}[c]{@{}l@{}}
+            Conditions de passage à la \\phase suivante :
+        \end{tabular}                                                                                       \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Nomination des CdP et \\RQT\\
+        \end{tabular}}                                    & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Validation des futurs   \\livrables\\
+            \tabitem Validation par l'équipe \\du planning prévisionnel
+        \end{tabular}}               &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem ENTP opérationnel                                                                      \\
+            \tabitem PAQL signé par l'équipe
+        \end{tabular}                                                                                       \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsubsection{Phase de spécification} %2.2.2.2
+Spécification : Le dossier de spécification devra respecter le plan défini par la norme
+\cite[IEEE\-830\_1998]{830} et s'appuyer sur la notation UML \cite[UML\_2.5.1\_2017]{UML}.
+Deux audits (un consultatif et un normatif) porteront sur le dossier de
+spécification. Le plan de test ainsi que le cahier de test de validation
+seront établis durant cette étape de spécification. Deux audits
+(un consultatif et un normatif) porteront sur cette activité. Une revue de
+mi-avancement aura lieu pour présenter au client le dossier de spécification
+et les éléments contractuels.
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{|lll|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{3}{|l|}{\cellcolor[HTML]{CCCCCC}\textbf{PHASE : SPÉCIFICATION I1 \& I2}}              \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Objectifs :                                                                                        \\
+                \tabitem Mener des activités d'exploration techniques afin d'évaluer la complexité et le temps     \\
+                nécessaire à la réalisation du futur produit.                                                      \\
+                \tabitem Présenter les principales fonctionnalités et performances requises                        \\
+                \tabitem Faire la description complète de toutes les fonctionnalités des sous-ensembles du projet. \\
+                \tabitem Présenter le dossier de spécification.                                                    \\
+                \tabitem Présenter le plan de test et les scénarios de validation.                                 \\
+            \end{tabular}} \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Remarques : \\
+            \end{tabular}}                                                                         \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Acteurs \& responsabilités : \\
+                \tabitem Équipe              \\
+                \tabitem Client
+            \end{tabular}}                                       & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Méthodes \& Règles : \\
+                \tabitem PAQL        \\
+            \end{tabular}}                                           &
+        \begin{tabular}[c]{@{}l@{}}
+            Moyens \& Outils : \\
+            \tabitem ENTP      \\
+            \tabitem EDI       \\
+            \tabitem Outils de test
+        \end{tabular}                                                                         \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités                          \\ d'organisation/pilotage :\\
+                \tabitem Organiser les échanges    \\ d'informations avec le client\\
+                \tabitem Organiser les consultings \\ avec Formato
+            \end{tabular}} & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités de                     \\ production/soutien :\\
+                \tabitem Rédaction du dossier    \\ de spécification\\
+                \tabitem Rédaction du plan       \\ de test\\
+                \tabitem Rédaction des scénarios \\ de validation\\
+                \tabitem Élaboration des         \\ maquettes des écrans\\
+                \tabitem Explorations technique  \\
+                \tabitem Rédaction contrat et devis
+            \end{tabular}}            &
+        \begin{tabular}[c]{@{}l@{}}
+            Activités de                         \\ vérification/contrôle :\\
+            \tabitem Consultings                 \\
+            \tabitem AC spécification, plan      \\ de test   \\
+            \tabitem AC scénarios de validation  \\
+            \tabitem AN spécification            \\
+            \tabitem AN plan de test, scénarios  \\ de validation    \\
+        \end{tabular}                                  \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en entrée :       \\
+                \tabitem Cahier des charges Client \\
+            \end{tabular}}                                 & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en sortie :      \\
+                \tabitem Dossier de spécification \\
+                \tabitem Plan de test             \\
+                \tabitem Scénarios de validation  \\
+                \tabitem Contrat client et devis  \\
+            \end{tabular}}                                  &
+        \begin{tabular}[c]{@{}l@{}}
+            Produits révisés : \\
+            \tabitem PAQL
+        \end{tabular}                                                                         \\ \hline
+        \multicolumn{3}{|l|}{\begin{tabular}[c]{@{}l@{}}
+                Jalons de la phase :                                                                               \\
+                \tabitem J1 : 16/03/2023 (Relecture spécification, plan de test et scénarios de validation incrément 1)   \\
+                \tabitem J2 : 17/03/2023 (AC spécification et plan de test)                                        \\
+                \tabitem J3 : 21/03/2023 (AC scénarios de validation)                                              \\
+                \tabitem J4 : 23/05/2023 (Relecture spécification, plan de test et scénarios de validation incrément 2)   \\
+                \tabitem J5 : 24/05/2023 (AN spécification)                                                        \\
+                \tabitem J6 : 26/05/2023 (AN plan de test et scénarios de validation)                              \\
+            \end{tabular}}         \\ \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{1}{|l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions \\ de début de phase :
+            \end{tabular}}                                     & \multicolumn{1}{l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions \\ de fin de phase :
+            \end{tabular}}                                        &
+        \begin{tabular}[c]{@{}l@{}}
+            Conditions \\ de passage à la \\phase suivante :
+        \end{tabular}                                                    \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Initialisation démarrée
+            \end{tabular}}                                      & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Validation des produits \\ en sortie\\
+                \tabitem Signature du client     \\
+            \end{tabular}}                       &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Dossier de spécification   \\ validé et signé par le client \\
+            \tabitem Plan de test validé et     \\ signé par le client \\
+        \end{tabular}                                 \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\newpage
+\subsubsubsection{Phase de conception} %2.2.2.3
+Un audit consultatif et un audit normatif porteront respectivement sur la conception générale et sur la conception générale détaillée.
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{|lll|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{3}{|l|}{\cellcolor[HTML]{CCCCCC}\textbf{PHASE : CONCEPTION I1 \& I2}}             \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Objectifs :                                                                       \\
+                \tabitem Organiser et optimiser les temps de conception                           \\
+                \tabitem Définir l'architecture logicielle des applications                         \\
+                \tabitem Finaliser les ultimes explorations techniques et les intégrer au dossier\\
+                \tabitem Décrire explicitement le dossier de conception                           \\
+            \end{tabular}}              \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Remarques : \\
+                \tabitem La conception générale peut commencer en parallèle des spécifications.
+            \end{tabular}}                 \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Acteurs \& responsabilités : \\
+                \tabitem Équipe              \\
+                \tabitem Client
+            \end{tabular}}                                    & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Méthodes \& Règles :              \\
+                \tabitem PAQL                     \\
+                \tabitem Dossier de spécification \\
+            \end{tabular}}                               &
+        \begin{tabular}[c]{@{}l@{}}
+            Moyens \& Outils : \\
+            \tabitem ENTP      \\
+            \tabitem EDI       \\
+            \tabitem Outil d'animation   \\
+            % CHECK_PROF AnimUML tel quel ? Même question pour les autres outils comme LaTeX
+        \end{tabular}                                                                     \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités                       \\ d'organisation/pilotage :\\
+                \tabitem Organiser les échanges \\ d'informations avec le client
+            \end{tabular}}    & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités de                          \\ production/soutien :   \\
+                \tabitem Définition de l'architecture \\ technique              \\
+                \tabitem Rédaction du dossier         \\ de conception          \\
+                \tabitem Rédaction des scénarios      \\ de validation          \\
+                \tabitem Révision du dossier          \\ de spécification
+            \end{tabular}} &
+        \begin{tabular}[c]{@{}l@{}}
+            Activités de               \\ vérification/contrôle :\\
+            \tabitem Consultings       \\
+            \tabitem AC sur conception \\
+            \tabitem AN sur conception \\
+        \end{tabular}                                           \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en entrée :      \\
+                \tabitem Dossier de spécification \\
+            \end{tabular}}                               & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en sortie :   \\
+                \tabitem Dossier de conception \\
+            \end{tabular}}                                  &
+        \begin{tabular}[c]{@{}l@{}}
+            Produits révisés :                \\
+            \tabitem PAQL                     \\
+            \tabitem Dossier de spécification \\
+        \end{tabular}                                                              \\ \hline
+        \multicolumn{3}{|l|}{\begin{tabular}[c]{@{}l@{}}
+            Jalons de la phase :          \\
+            \tabitem J1 : 19/04/2023 (AC conception générale) \\
+            \tabitem J2 : 31/05/2023 (AN conception générale et détaillée) \\
+        \end{tabular}}                                             \\ \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{1}{|l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions \\ de début de phase :
+            \end{tabular}}                                  & \multicolumn{1}{l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions \\ de fin de phase :
+            \end{tabular}}                                     &
+        \begin{tabular}[c]{@{}l@{}}
+            Conditions \\ de passage à la \\phase suivante :
+        \end{tabular}                                                \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Dossier de spécification \\ pré-validé \\
+                \tabitem Plan de test pré-validé  \\
+                \tabitem Scénarios de validation  \\ pré-validés
+            \end{tabular}}                 & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Validation des produits \\ en sortie
+            \end{tabular}}                      &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Dossier de conception \\validé
+        \end{tabular}                                                         \\ \hline
+    \end{tabular}
+\end{table}
+\newpage
+
+\subsubsubsection{Phase de réalisation} %2.2.2.4
+Codage : quatre audits porteront sur le code source produit afin notamment de s'assurer du bon respect du PAQL et des normes de programmation. Deux porteront sur le code écrit en langage C sur cible embarquée (consultatif et normatif) et deux autres sur le code fonctionnant sur la plateforme Android.
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{|lll|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{3}{|l|}{\cellcolor[HTML]{CCCCCC}\textbf{PHASE : RÉALISATION I1 \& I2}}          \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Objectifs :                                                                           \\
+                \tabitem Développer les applications logicielles.                                     \\
+                \tabitem Tester les applications logicielles définies lors de la phase de conception. \\
+                \tabitem Coder les tests d'intégration et unitaires et adopter les outils de test.    \\
+            \end{tabular}}        \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Remarques : \\
+                \tabitem L'étape de réalisation peut commencer en parallèle de la conception.
+            \end{tabular}}                 \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Acteurs \& responsabilités : \\
+                \tabitem Équipe
+            \end{tabular}}                                  & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Méthodes \& Règles :              \\
+                \tabitem PAQL                     \\
+                \tabitem Dossier de spécification \\
+                \tabitem Dossier de conception    \\
+            \end{tabular}}                             &
+        \begin{tabular}[c]{@{}l@{}}
+            Moyens \& Outils :      \\
+            \tabitem ENTP           \\
+            \tabitem Moyens de test \\
+            \tabitem EDI            \\
+        \end{tabular}                                                                   \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités                        \\ d'organisation/pilotage :\\
+                \tabitem Organiser les fonctions \\prioritaires\\
+                \tabitem Organiser les échanges  \\d'informations avec le client
+            \end{tabular}} & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités de                   \\production/soutien : \\
+                \tabitem Code de production C  \\
+                \tabitem Code de production    \\ Android             \\
+                \tabitem Code de production de \\ tests unitaires
+            \end{tabular}}         &
+        \begin{tabular}[c]{@{}l@{}}
+            Activités de                \\ vérification/contrôle :\\
+            \tabitem AC sur réalisation \\ C et Android \\
+            \tabitem AN sur réalisation \\ C et Android \\
+            \tabitem Consultings        \\ C et Android\\
+        \end{tabular}                                        \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en entrée :   \\
+                \tabitem Dossier de conception \\
+                \tabitem PAQL                  \\
+                \tabitem Plan de test
+            \end{tabular}}                                & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en sortie : \\
+                \tabitem Artefacts de code   \\ (source et tests)  \\
+                \tabitem Cahier de test :    \\ écriture des jeux de test \\
+            \end{tabular}}     &
+        \begin{tabular}[c]{@{}l@{}}
+            Produits révisés :                \\
+            \tabitem PAQL                     \\
+            \tabitem Dossier de spécification \\
+            \tabitem Dossier de conception    \\
+        \end{tabular}                                                            \\ \hline
+        \multicolumn{3}{|l|}{\begin{tabular}[c]{@{}l@{}}
+                                     Jalons de la phase :                         \\
+                                     \tabitem J1 : 12/05/2023 Code C/Android (AC) \\
+                                     \tabitem J2 : 08/06/2023 Code C/Android (AN) \\
+                                 \end{tabular}}                            \\ \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{1}{|l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions \\ de début de phase :
+            \end{tabular}}                                & \multicolumn{1}{l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions \\ de fin de phase :
+            \end{tabular}}                                   &
+        \begin{tabular}[c]{@{}l@{}}
+            Conditions \\ de passage à la \\phase suivante :
+        \end{tabular}                                              \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Dossier de spécification \\ signé\\
+                \tabitem Contrat signé            \\
+                \tabitem Dossier de conception    \\ pré-validé
+            \end{tabular}}                  & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Validation des produits \\ en sortie \\
+            \end{tabular}}                 &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Applications logicielles \\réalisées\\
+            \tabitem Tests réalisables
+        \end{tabular}                                                 \\ \hline
+    \end{tabular}
+\end{table}
+\newpage
+
+
+\subsubsubsection{Phase de test} %2.2.2.5
+Tests unitaires, tests d'intégration : un audit consultatif portera sur l'ensemble de ces activités. Tests de validation :
+un audit normatif portera sur l'application des tests (validation, intégration et unitaire).\\
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{|lll|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{3}{|l|}{\cellcolor[HTML]{CCCCCC}\textbf{PHASE : TEST I1 \& I2}}                     \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Objectifs :                                                   \\
+                \tabitem Développer des tests fiables et efficaces.           \\
+                \tabitem Contrôler la fiabilité du logiciel.                  \\
+                \tabitem Identifier les erreurs logiques.                     \\
+                \tabitem Vérifier les interactions des interfaces.            \\
+                \tabitem Valider l'adéquation aux spécifications du logiciel. \\
+            \end{tabular}}                                    \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Remarques : \\
+                \tabitem La phase de programmation des tests peut commencer en parallèle de la réalisation.
+            \end{tabular}}       \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Acteurs \& responsabilités : \\
+                \tabitem Équipe de           \\ test cf. \cite[\refPlanTest]{PDT}
+            \end{tabular}}        & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Méthodes \& Règles :              \\
+                \tabitem PAQL                     \\
+                \tabitem Dossier de conception    \\
+                \tabitem Dossier de spécification \\
+                \tabitem Plan de test             \\
+                \tabitem Cahier de test
+            \end{tabular}}                           &
+        \begin{tabular}[c]{@{}l@{}}
+            Moyens \& Outils :      \\
+            \tabitem ENTP           \\
+            \tabitem EDI            \\
+            \tabitem Outils de test
+        \end{tabular}                                               \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités                       \\ d'organisation/pilotage :\\
+                \tabitem Vérifications croisées \\
+                \tabitem Organiser les tests    \\principaux\\
+            \end{tabular}} & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités de                            \\ production/soutien :\\
+                \tabitem Exécution des tests de         \\ communication\\
+                \tabitem Compléter cahier de test       \\
+                \tabitem Exécution tests unitaires      \\
+                \tabitem Exécution tests d'intégration  \\
+                \tabitem Exécution tests validation     \\
+            \end{tabular}}  &
+        \begin{tabular}[c]{@{}l@{}}
+            Activités de               \\ vérification/contrôle :\\
+            \tabitem Consultings tests \\
+            \tabitem AC cahier de test \\
+            \tabitem AN scénarios de   \\ validation  \\
+            \tabitem AN plan de test   \\
+            \tabitem AN cahier de test
+        \end{tabular}                                             \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en entrée :      \\
+                \tabitem Scénarios de validation  \\
+                \tabitem Dossier de conception    \\
+                \tabitem PAQL                     \\
+                \tabitem Applications logicielles \\
+                \tabitem Cahier de test           \\
+            \end{tabular}}                           & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en sortie :       \\
+                \tabitem Artefacts de code         \\
+                \tabitem Cahier de test : résultat \\ des jeux de test   \\
+            \end{tabular}}    &
+        \begin{tabular}[c]{@{}l@{}}
+            Produits révisés :                \\
+            \tabitem Dossier de spécification \\
+            \tabitem Dossier de conception    \\
+            \tabitem Artefacts de code        \\
+        \end{tabular}                                                                \\ \hline
+        \multicolumn{3}{|l|}{\begin{tabular}[c]{@{}l@{}}
+                                     Jalons de la phase :                                               \\
+                                     \tabitem J1 : 17/03/2023 Plan de test (AC)                         \\
+                                     \tabitem J2 : 15/05/2023 Cahier de test (AC)                       \\
+                                     \tabitem J3 : 26/05/2023 Plan de test (AN)                         \\
+                                     \tabitem J4 : 12/06/2023 Cahier de test (AC)                       \\
+                                 \end{tabular}}          \\ \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{1}{|l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions début de phase :
+            \end{tabular}}                                    & \multicolumn{1}{l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Condition fin de phase :
+            \end{tabular}}                                    &
+        \begin{tabular}[c]{@{}l@{}}
+            Conditions \\ de passage à la \\phase suivante :
+            \end{tabular}                                                                    \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Plan de test \\partiellement validé
+            \end{tabular}}                   & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Validation des produits \\ en sortie
+            \end{tabular}}                  &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Tests réalisés \\
+            \tabitem Cahier de test complet
+        \end{tabular}                                                                   \\ \hline
+    \end{tabular}
+\end{table}
+\newpage
+
+\subsubsubsection{Phase de recette} %2.2.2.6
+N.A.
+
+\begin{table}[H]
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabular}{|lll|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{3}{|l|}{\cellcolor[HTML]{CCCCCC}\textbf{PHASE : RECETTE}}                               \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Objectifs :                                                                 \\
+                \tabitem Réceptionner l'ensemble des productions afin de conclure le projet \\
+            \end{tabular}}                          \\ \hline
+        \multicolumn{3}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Remarques : \\
+                \tabitem N.A. %CHECK_PROF à vérifier : Se fera en même temps que la phase de bilan de fin de projet
+            \end{tabular}}                                                      \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Acteurs \& responsabilités : \\
+                \tabitem CdP                 \\
+                \tabitem Équipe              \\
+                \tabitem Client
+            \end{tabular}}                                          & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Méthodes \& Règles :              \\
+                \tabitem PAQL                     \\
+                \tabitem Dossier de conception    \\
+                \tabitem Dossier de spécification \\
+                \tabitem Intégration
+            \end{tabular}}                                     &
+        \begin{tabular}[c]{@{}l@{}}
+            Moyens \& Outils : \\
+            \tabitem ENTP
+        \end{tabular}                                                                           \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités                       \\ d'organisation/pilotage :\\
+                \tabitem Organiser les échanges \\ d'informations avec le client
+            \end{tabular}}         & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Activités de                        \\ production/soutien :\\
+                \tabitem Rédaction du procès-verbal \\ de recette\\
+                \tabitem Production des supports    \\ de communication
+            \end{tabular}}            &
+        \begin{tabular}[c]{@{}l@{}}
+            Activités de                    \\ vérification/contrôle :\\
+            \tabitem Contrôle des livrables \\ clients \\
+            \tabitem Réunion finale avec client
+        \end{tabular}                                            \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en entrée :      \\
+                \tabitem PAQL                     \\
+                \tabitem Dossier de spécification \\
+                \tabitem Dossier de conception    \\
+                \tabitem Plan de test             \\
+                \tabitem Cahier de test           \\
+                \tabitem Artefacts de code        \\
+            \end{tabular}}                                     & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                Produits/données en sortie :       \\
+                \tabitem Applications logicielles  \\
+                \tabitem Supports de communication \\
+                \tabitem Manuels d'installation et \\ d'utilisation (I2 seulement)    \\
+                \tabitem Procès verbal de recette  \\ définitive (I2 seulement) \\
+            \end{tabular}} &
+        \begin{tabular}[c]{@{}l@{}}
+            Produits révisés :         \\
+            \tabitem Cahier de tests   \\
+            \tabitem Artefacts de code \\
+        \end{tabular}                                                                           \\ \hline
+        \multicolumn{3}{|l|}{\begin{tabular}[c]{@{}l@{}}
+            Jalons de la phase :                                             \\
+            \tabitem J1 : 14/06/2023 Application                             \\
+            \tabitem J2 : 14/06/2023 Manuels d'utilisation et d'installation \\
+            \tabitem J3 : 14/06/2023 Procès verbal de la recette             \\
+            \tabitem J4 : 14/06/2023 Supports de communication               \\
+        \end{tabular}}                \\ \hline
+        \rowcolor[HTML]{CCCCCC}
+        \multicolumn{1}{|l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions \\ de début de phase :
+            \end{tabular}}                                        & \multicolumn{1}{l|}{\cellcolor[HTML]{CCCCCC}
+        \begin{tabular}[c]{@{}l@{}}
+                Conditions \\ de fin de phase :
+            \end{tabular}}                                           &
+        \begin{tabular}[c]{@{}l@{}}
+            Conditions \\ de passage à la \\phase suivante :
+        \end{tabular}                                                      \\ \hline
+        \multicolumn{1}{|l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Phase de test terminée
+            \end{tabular}}                                    & \multicolumn{1}{l|}{
+        \begin{tabular}[c]{@{}l@{}}
+                \tabitem Validation des produits \\ en sortie
+            \end{tabular}}                            &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem N.A. : Fin du projet \\
+        \end{tabular}                                                                        \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsubsection{Phase de bilan de fin de projet} %2.2.2.7
+N.A.
+\bigskip
+
+\subsection{Responsabilité} %2.3
+\subsubsection{Définition Générale des rôles} %2.3.1
+
+Chaque membre de l'équipe projet est tenu de respecter et d'appliquer les
+normes du PAQL dans son travail.\\
+Chaque membre pourra avoir l'un des rôles suivants :
+\begin{itemize}
+    \item \textbf{Chef de projet (CdP) :} Chef de Projet supervise la bonne tenue du
+          projet et assure le management de l'équipe projet. Il édite les
+          documents administratifs et organise le projet selon le planning
+          prévisionnel qu'il aura défini. Il participe également aux activités techniques de
+          spécification, conception, réalisation et de tests.
+    \item \textbf{Responsable Qualité et Test (RQT) :}  Le Responsable Qualité-Test a pour
+          mission de s'assurer de la qualité des livrables et de la fiabilité de la
+          solution technique produite. Cela se traduit notamment par la rédaction
+          et la vérification de la bonne application du PAQL par les membres de
+          l'équipe. Il participe également aux activités techniques de spécification,
+          conception et de réalisation et supervise les opérations de tests.
+    \item \textbf{Développeur C :} Sous la direction du CdP, les développeurs
+          mènent les activités techniques et appliquent les règles éditées dans le
+          PAQL. Ils participent également aux activités techniques de spécification,
+          conception, réalisation et de tests.
+    \item \textbf{Développeur Android :} Sous la direction du CdP, les développeurs
+          mènent les activités techniques et appliquent les règles éditées dans le
+          PAQL. Ils participent également aux activités techniques de spécification,
+          conception, réalisation et de tests.
+\end{itemize}
+
+\subsubsection{Récapitulatif des responsabilités client sur les phases} %2.3.2
+
+\begin{table}[H]
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \textbf{Phase}                                                                               &
+        \textbf{Implication Client}                                                                  &
+        \textbf{Implication Équipe Projet}                                                             \\ \hline
+        \textbf{Initialisation}                                                                      &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Rédiger le cahier des charges  \\
+            % CHECK_PROF à cette phase ? 
+        \end{tabular}
+                                                                                                     &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Comprendre des éléments  \\
+            techniques apportés par le client \\
+            \tabitem Rédiger le contrat et le devis
+            client                            \\
+            \tabitem Etablir un planning prévisionnel
+        \end{tabular}                                                       \\ \hline
+
+        \textbf{Spécification}                                                                       &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Signer le contrat et le\\ devis                                \\
+            \tabitem Répondre aux questions \\ concernant l'étude des besoins       \\
+            \tabitem Valider l'IHM          \\
+            \tabitem Valider le dossier de  \\ spécification                        \\
+        \end{tabular}
+                                                                                                     &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Rédiger le dossier de spécification \\
+            \tabitem Rédiger le plan de test             \\
+        \end{tabular}                                                   \\ \hline
+        \textbf{Conception}                                                                          &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Répondre aux questions \\ soulevées lors de la phase de \\ conception
+        \end{tabular}               &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Rédiger le dossier de conception \\
+            \tabitem Rédiger le cahier de test
+        \end{tabular}                                                      \\ \hline
+        \textbf{Réalisation}                                                                         &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Répondre aux questions \\ soulevées lors de la phase de \\ réalisation \\
+        \end{tabular}           &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Développer les modules logiciels \\
+            \tabitem Développer les tests unitaires   \\  des applications
+        \end{tabular}                                  \\ \hline
+        \textbf{Test}                                                                                &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Répondre aux questions \\ soulevées lors de la phase de           \\ test        \\
+        \end{tabular} &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Analyse des tests \\
+            \tabitem Vérification finale des applications
+        \end{tabular}                                                   \\ \hline
+        \textbf{Recette}                                                                             &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Valider le taux de        \\ fiabilité des tests     \\
+            \tabitem Valider le fonctionnement \\ global du projet    \\
+            \tabitem Valider l'ensemble des    \\ livrables reçus     \\
+            \tabitem Effectuer le paiement
+        \end{tabular}                             &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Livrer l'ensemble des livrables
+        \end{tabular}                                                        \\ \hline
+        \textbf{\begin{tabular}[c]{@{}l@{}}Bilan de fin\\ de projet\end{tabular}}                    &
+        \begin{tabular}[c]{@{}l@{}}
+            \tabitem Evaluer le travail réalisé par \\
+            l'équipe projet et lui transmettre      \\
+            d'éventuelles remarques                 \\
+        \end{tabular}                                                   &
+        \begin{tabular}[c]{@{}l@{}}
+            N.A.
+        \end{tabular}                                                          \\ \hline
+    \end{tabular}
+\end{table}
+
+\newpage
+\subsubsection{Récapitulatif des responsabilités du CdP sur les phases} %2.3.3
+
+\begin{longtable}{|p{0.15\linewidth}|p{0.8\linewidth}|}
+    \hline
+    \rowcolor[rgb]{0.753,0.753,0.753}   \textbf{Phase} & \textbf{Implication CdP}  \endfirsthead
+    \hline
+    \textbf{Initialisation}                            & \ti{
+    \tabitem Rédiger le contrat client                                                           \\
+    \tabitem Établir le devis                                                                    \\
+    \tabitem Rédiger le planning prévisionnel                                                    \\
+    \tabitem Organiser l'ENTP                                                                    \\
+    \tabitem Planifier, préparer et animer les réunions                                          \\
+    \tabitem Rédiger les comptes-rendus de réunions et de consultings                            \\
+    \tabitem Gérer la relation avec le client et l'informer du déroulement du projet             \\
+    \tabitem Réceptionner le matériel fourni par le client                                       \\
+    \tabitem Gérer les ressources humaines                                                       \\
+    \tabitem Pédagogie sur les outils à utiliser auprès des membres de l'équipe                  \\
+    \tabitem Pédagogie sur le cahier des charges et les outils imposés par le client             \\
+    }                                                                                            \\ \hline
+    \textbf{Spécification}                             & \ti{
+    \tabitem Poursuivre la rédaction du devis et du contrat client                               \\
+    \tabitem Planifier, préparer et animer les réunions et les consultings                       \\
+    \tabitem Gérer la relation avec le client et l'informer des avancées                         \\
+    \tabitem Gérer les ressources humaines                                                       \\
+    \tabitem Superviser l'élaboration du dossier de spécification                                \\
+    \tabitem Valider le dossier de spécification                                                 \\
+    \tabitem Valider les scénarios de validation                                                 \\
+    \tabitem Valider le plan de test                                                             \\
+    \tabitem Relire et valider le PAQL                                                           \\
+    }                                                                                            \\    \hline
+    \textbf{Conception}                                & \ti{
+    \tabitem Planifier, préparer et animer les réunions et les consultings                       \\
+    \tabitem Gérer la relation avec le client et l'informer des avancées                         \\
+    \tabitem Gérer les ressources humaines                                                       \\
+    \tabitem Superviser l'élaboration du dossier de conception                                   \\
+    \tabitem Valider le dossier de conception                                                    \\
+    }                                                                                            \\ \hline
+    \textbf{Réalisation}                               & \ti{
+    \tabitem Planifier, préparer et animer les réunions et les consultings                       \\
+    \tabitem Gérer la relation avec le client et l'informer des avancées                         \\
+    \tabitem Gérer les ressources humaines                                                       \\
+    \tabitem Superviser les réalisations                                                         \\
+    \tabitem Développer le code                                                                  \\
+    \tabitem Développer les tests                                                                \\
+    \tabitem Valider les réalisations                                                            \\
+    }                                                                                            \\ \hline
+    \textbf{Test}                                      & \ti{
+    \tabitem Planifier, préparer et animer les réunions et les consultings                       \\
+    \tabitem Gérer la relation avec le client et l'informer des avancées                         \\
+    \tabitem Gérer les ressources humaines                                                       \\
+    \tabitem Superviser les opérations de test                                                   \\
+    \tabitem Exécuter les tests de validation et d'intégration                                   \\
+    \tabitem Revoir le code et la conception                                                     \\
+    }                                                                                            \\ \hline
+    \textbf{Recette}                                   & \ti{
+    \tabitem Planifier, préparer et animer les réunions et les consultings                       \\
+    \tabitem Gérer la relation avec le client et l'informer des avancées                         \\
+    \tabitem Gérer les ressources humaines                                                       \\
+    \tabitem Livrer le projet au client                                                          \\
+    \tabitem Réceptionner le paiement                                                            \\
+    }                                                                                            \\ \hline
+    \textbf{\ti{Bilan de fin                                                                     \\ de projet}} & \ti{
+    \tabitem Planifier, préparer et animer les réunions et les consultings                       \\
+    \tabitem Gérer les ressources humaines                                                       \\
+    \tabitem Rédiger la fiche de synthèse personnelle                                            \\
+    \tabitem Faire la synthèse de projet                                                         \\
+    \tabitem Gérer la relation avec le client et l'informer des avancées                         \\
+    \tabitem Rendre la matériel au client                                                        \\
+        \tabitem Livrer le projet au client
+    }                                                                                            \\ \hline
+\end{longtable}
+
+\subsubsection{Récapitulatif des responsabilités RQT sur les phases}
+
+\begin{table}[H]
+    \begin{tabular}{|l|l|}
+        \rowcolor[HTML]{CCCCCC}
+        \hline
+        \textbf{Phase}          & \textbf{Implication RQT}                                     \\ \hline
+        \textbf{Initialisation} & \ti{
+        \tabitem Rédiger le PAQL                                                               \\
+        \tabitem Faire de la pédagogie sur l'utilisation de l'ENP
+        }                                                                                      \\ \hline
+        \textbf{Spécification}  & \ti{
+        \tabitem Finaliser le PAQL                                                             \\
+        \tabitem Vérifier le respect du PAQL (inspections de conformité sur l'ENTP)            \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        \tabitem Rédiger les comptes-rendus de réunions et de consultings                      \\
+        \tabitem Superviser la rédaction des Scénarios de Validation                           \\
+        \tabitem Élaborer et rédiger le plan de test                                           \\
+        \tabitem Mettre en page et relire le dossier de spécification                          \\
+        }                                                                                      \\ \hline
+        \textbf{Conception}     & \ti{
+        \tabitem Vérifier le respect du PAQL (inspections de conformité sur l'ENTP)            \\
+        \tabitem Prendre en main les outils de test                                            \\
+        \tabitem Superviser la rédaction du cahier de test                                     \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        \tabitem Rédiger les comptes-rendus de réunions et de consultings                      \\
+        \tabitem Mettre en page et relire le dossier de conception                             \\
+        }                                                                                      \\ \hline
+        \textbf{Réalisation}    & \ti{
+        \tabitem Superviser la rédaction des tests d'intégration                               \\
+        \tabitem Vérifier le respect du PAQL (inspections de conformité sur l'ENTP)            \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        \tabitem Rédiger les comptes-rendus de réunions et de consultings                      \\
+        \tabitem Développer le code                                                            \\
+        \tabitem Développer les tests                                                          \\
+        }                                                                                      \\ \hline
+        \textbf{Test}           & \ti{
+        \tabitem Vérifier le respect du PAQL (inspections de conformité sur l'ENTP)            \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        \tabitem Rédiger les comptes-rendus de réunions et de consultings                      \\
+        \tabitem Superviser les opérations de test                                             \\
+        \tabitem Participer au développement des tests                                         \\
+        \tabitem Exécuter les tests de validation et d'intégration                             \\
+        \tabitem Revoir le code et la conception                                               \\
+        \tabitem Valider les tests                                                             \\
+        }                                                                                      \\ \hline
+        \textbf{Recette}        & \ti{
+        \tabitem Vérifier le respect du PAQL (inspections de conformité sur l'ENTP)            \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        \tabitem Rédiger les comptes-rendus de réunions et de consultings                      \\
+        }                                                                                      \\ \hline
+        \textbf{\ti{Bilan de fin                                                               \\ de projet}} & \ti{
+        \tabitem Vérifier le respect du PAQL (inspections de conformité sur l'ENTP)            \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        \tabitem Rédiger les comptes-rendus de réunions et de consultings                      \\
+        \tabitem Rédiger la fiche de synthèse personnelle                                      \\
+        }                                                                                      \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{Récapitulatif des responsabilités des développeurs sur les phases}
+
+\begin{table}[H]
+    \begin{tabular}{|l|l|}
+        \rowcolor[HTML]{CCCCCC}
+        \hline
+        \textbf{Phase}          & \textbf{Implication Équipe de développement}                 \\ \hline
+        \textbf{Initialisation} & \ti{
+        \tabitem Mener les premières explorations techniques sur les outils à                  \\
+        utiliser et rédiger des tutoriels                                                      \\
+        \tabitem Prendre connaissance de l'ENTP Participer aux réunions et consultings                                                            \\
+        }                                                                                      \\ \hline
+        \textbf{Spécification}  & \ti{
+        \tabitem Mener des explorations techniques sur les outils présentés par le client                                                          \\
+        \tabitem Rédiger le dossier de spécification                                           \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        \tabitem Participer à la rédaction des Scénarios de Validation                         \\
+        }                                                                                      \\ \hline
+        \textbf{Conception}     & \ti{
+        \tabitem Rédiger le dossier de conception                                              \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        }                                                                                      \\ \hline
+        \textbf{Réalisation}    & \ti{
+        \tabitem Développer le code                                                            \\
+        \tabitem Développer les tests                                                          \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        }                                                                                      \\ \hline
+        \textbf{Test}           & \ti{
+        \tabitem Exécuter les tests de validation et d'intégration                             \\
+        \tabitem Revoir le code et la conception                                               \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        }                                                                                      \\ \hline
+        \textbf{Recette}        & \ti{
+        \tabitem Participer aux réunions et consultings                                        \\
+        }                                                                                      \\ \hline
+        \textbf{\ti{Bilan de fin                                                               \\ de projet}} & \ti{
+        \tabitem Rédiger la fiche de synthèse personnelle                                      \\
+        \tabitem Participer aux réunions et consultings                                        \\
+        }                                                                                      \\ \hline
+    \end{tabular}
+\end{table}
+
+\section{Documentation} \label{sec:Documentation}
+\subsection{But}
+Ce chapitre décrit les règles de gestion de la documentation du projet.
+En effet, un certain nombre d'artefacts du projet concerne des documents.
+
+\subsection{Type de documents}
+Les documents suivants sont distingués suivant leur nature,
+qu'ils soient livrés au client ou non, consultables par
+les auditeurs ou réservés à l'équipe projet, et ce suivant
+la phase où ils sont produits.\\
+Les artefacts de documentation, dits "livrables client" sont :
+\begin{itemize}
+    \item Dossier de spécification
+    \item Plan d'Assurance Qualité Logicielle (PAQL)
+    \item Contrat et devis
+    \item Dossier de conception
+    \item Plan de test
+    \item Artefacts de code
+    \item Cahier de test
+    \item Manuel d'utilisation et manuel d'installation
+    \item Présentation de mi-avancement et finale
+    \item Points d'avancement hebdomadaires
+\end{itemize}
+Les artefacts consultables par les consultants,
+dits "consultables auditeur", sont :
+\begin{itemize}
+    \item Tous les documents "livrables client"
+    \item Plan d'Assurance Qualité Logicielle (PAQL)
+    \item Ordre du jour réunion projet
+    \item Compte-rendu réunion client
+    \item Compte-rendu réunion projet
+    \item Correspondances échangées avec le client
+\end{itemize}
+Les artefacts de code sont :
+\begin{itemize}
+    \item Les codes sources
+    \item Les codes de test
+    \item La documentation du code source (générée à partir des commentaires Doxygen)
+\end{itemize}
+Les autres documents du projet sont considérés comme internes au projet.
+
+\subsection{Référence des documents} \label{sec:RefDocuments}
+La référence d'un document est de la forme suivante :
+« SIGLE\_{\teamNumber} », où {\teamNumber} désigne l'identifiant de l'équipe
+(une lettre et un numéro) et le SIGLE correspond à
+l'une des combinaisons de lettres citées ci-dessous.\\
+
+Ce système de référencement ne sera appliqué que pour
+les livrables "consultables auditeur". Les ébauches et
+documents internes à l'équipe échappent donc
+à cette règle de nommage.\\
+
+\begin{table}[H]
+    \begin{tabular}{|l|l|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \textbf{Référence}        & \textbf{Libellé Document}           \\ \hline
+        \refPAQL                  & Plan d'Assurance Qualité Logicielle \\ \hline
+        \refSpec                  & Dossier de spécification           \\ \hline
+        \refConc                  & Dossier de conception               \\ \hline
+        \refCahierTest            & Cahier de test                      \\ \hline
+        \refPlanTest              & Plan de test                        \\ \hline
+        \refDevis                 & Devis client                        \\ \hline
+        \refContrat               & Contrat client                      \\ \hline
+        CR\_DATE                  & Compte Rendu                        \\ \hline
+        PRES\_DATE\_{\teamNumber} & Document de Présentation            \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsection{État d'un document}
+Les différents états d'un document sont :
+\begin{itemize}
+    \item \textbf{Initialisation :} création du document ;
+    \item \textbf{En cours de rédaction :} document en cours de rédaction, d'un point de vue architecture et contenu ;
+    \item \textbf{En relecture :} document en attente de relecture ;
+    \item \textbf{En attente de validation :} document prêt pour la validation auprès de l'entité compétente (responsable du document et/ou CdP/RQT) ;
+    \item \textbf{Livrable :} document validé par l'entité compétente
+    \item \textbf{Attente prochain incrément :} document livré au client
+\end{itemize}
+La figure ci-dessous illustre l'évolution de l'état d'un document.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{etatDocument}
+    \caption{Évolution de l'état d'un document}
+\end{figure}
+
+\subsection{Version d'un document}
+Dans le PAQL ici présenté, la version est au format X.Y tel que :
+\begin{itemize}
+    \item X est incrémenté à chaque validation d'un document ;
+    \item Y est incrémenté à chaque modification significative du
+          document (des modifications mineures n'entraînent pas d'incrémentation de Y
+          mais simplement de la révision tel que décrit dans le paragraphe suivant).
+\end{itemize}
+
+Par ailleurs, des révisions peuvent être réalisées. Il s'agit de correctifs mineurs tel que des corrections orthographiques ou de mise en page.
+Chaque contributeur doit penser à mettre à jour le numéro de version ainsi que la révision en tête du fichier source du présent document et 
+dans la table de versions correspondante. C'est au responsable du document de veiller à la bonne évolution du numéro de version et de la table des versions. Cependant, il est du rôle de chacun de faire évoluer cette table selon les règles précédemment.\\
+
+\subsection{Responsable d'document}
+Un seul membre d'une équipe est responsable d'un document.
+Tout document doit avoir un responsable désigné. C'est ce responsable qui
+suit l'évolution du document et ses différents états.\\
+
+C'est aussi le responsable qui, en collaboration avec le CdP, gérera les cas où différents membres d'une équipe désirent travailler en même temps sur la
+même version d'un document dont il est le responsable.
+Il lui appartient alors de mettre en œuvre la stratégie
+qui lui semble la mieux adaptée, soit en :
+\begin{itemize}
+    \item Séquençant les mises à jour ;
+    \item Demandant à ce que les membres rédigent leur contribution et lui transmette ensuite leur version via le RDP
+          afin qu'il les intègre lui-même dans le document global et qu'il dépose sur le RDP après l'intégration.
+\end{itemize}
+
+\subsection{Processus d'édition d'un document}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{processEdition}
+    \caption{Processus d'édition d'un document}
+\end{figure}
+
+Le processus d'édition de document de la figure ci-dessus nous permet d'assurer un suivi en
+continu sur les différents documents du projet et ainsi être
+en mesure de réagir rapidement en cas de pertes d'informations
+ou pour retrouver l'origine d'erreurs commises. \\
+
+Un outil assurera la gestion des versions des documents et artefacts de code.
+Chaque dépôt ou modification de document respectera la procédure de dépôt
+(cf. section \ref{sec:Git}). \\
+
+La table des versions des livrables documentaires devra également être mise à
+jour lors de la publication sur le RDP. \\
+
+\subsection{Format des documents}
+Pour tous les documents "livrables client" et "consultables auditeur",
+il faut respecter un modèle de document associé. Ces modèles
+sont disponibles sur le RDP, dans le dossier Qualité. Ces documents sont soumis aux exigences de qualité
+détaillées dans la section \ref{sec:ExQualiArte}.
+
+\subsubsection{Modèle de document}
+Des modèles de documents sont proposés suivant leur type.
+Ces modèles doivent être impérativement utilisés.
+Ils sont disponibles dans le RDP, dans le dossier « Qualite/Modeles ».
+Tous les fichiers seront au format PDF, produits par le langage LaTeX.
+
+\subsubsection{Artefacts de code} \label{sec:ArtefCode}
+Dans le RDP, dossier « qualite/modeles »,
+les modèles d'artefact de code suivants sont disponibles :
+\begin{itemize}
+    \item example.h : modèle d'entête de fichier source en C incarné et assez complet pour un driver CAN simplifié ;
+    \item example.c : modèle de fichier source en C qui ne correspond pas au header example.h mais qui est très verbeux et
+    présente divers exemples des pratiques évoquées dans ce document ;
+    \item Example.java : modèle de fichier source en Java inutile mais qui est très verbeux et présente divers exemples des pratiques évoquées dans ce document ;
+\end{itemize}
+
+Ces exemples s'inspirent des règles de programmation pour le développement sécurisé de logiciels en langage C
+\cite[ANSSI-PA-073]{guideANSSI}.
+Il est impératif que tous les codes source produits dans le projet
+utilisent ces modèles et respectent les conventions de nommage qu'ils
+proposent. Le code source doit être commenté en utilisant les balises au format
+Doxygen. Ce point est crucial, car il permet la génération automatique
+de la documentation du code source de tout le projet.\\
+
+Les balises Doxygen utilisées pour la documentation des fonctions sont à minima :
+\begin{itemize}
+    \item @brief description courte de la fonction ;
+    \item @param[in] nomParam (en Java ou nom\_param C) description du paramètre donné en argument ;
+    \item @param[out] nomParam (en Java ou nom\_param C) description du paramètre rempli par la fonction ;
+    \item @param[in,out] nomParam (en Java ou nom\_param C) description du paramètre donné en argument et rempli par la fonction.
+\end{itemize}
+Des commentaires doivent aussi être ajoutés dans le code source pour faciliter
+la compréhension et l'évolution du code. Avec ces fichiers modèles, vous trouverez également des
+fichiers utilitaires de formatage de code source dont l'utilisation est vivement recommandée.\\
+
+Certains points des règles de codage à suivre sont précisés dans les parties suivantes.\\
+
+\subsubsection{Règles de codage en langage C :}
+En plus du suivi des fichier d'exemple .c/.h, le code produit devra respecter les règles suivantes :
+\begin{itemize}
+  \item La convention de nommage à utiliser est le snake\_case avec certains points à préciser ou rappeler :
+        \begin{itemize}
+            \item Les fonctions externes devront avoir comme préfixe le nom du fichier où elles sont prototypées en minuscule, suivi 
+            du nom de la fonction en snake\_case, par exemple mon\_module\_nom\_de\_ma\_fonction ;
+            \item Tous les noms de variables, de fonctions et de type seront en anglais ;
+            \item Une indentation sera constituée de 4 espaces ;
+            \item Le code sera formaté selon les fichiers de configurations disponibles sur le RDP, dans le dossier « qualite/modeles » ;
+            \item La longueur d'une ligne de code ne devra pas dépasser 125 caractères.
+            \item Les variables statiques (\emph{static}) seront préfixées par « s\_ » : s\_nom\_variable\_statique ;
+            \item Les variables constantes (\emph{const}) seront préfixées par « c\_ » : c\_nom\_variable\_constante ;
+            \item Les variables volatiles (\emph{volatile}) seront préfixées par « v\_ » : v\_nom\_variable\_volatile ;
+            \item Les variables locales seront préfixées par « l\_ » : l\_nom\_variable\_locale ;
+            \item Les paramètres de fonctions seront préfixés par « p\_ » : p\_nom\_parametre ;
+            \item Les types énumérés (\emph{enum}) seront suffixés par « \_e » : nom\_enumeration\_e\_t ;
+            \item Les types structures (\emph{struct}) seront suffixés par « \_t » : nom\_structure\_t ;
+            \item Les types unions (\emph{union}) seront suffixés par « \_u » : nom\_union\_u\_t ;
+        \end{itemize}
+  \item Les commentaires seront exclusivement en français mais pourront faire appel à des termes anglais.
+\end{itemize}
+
+\subsubsection{Règles de traduction de la conception vers du code C}
+Les règles de traduction de la conception vers du code C devront
+impérativement suivre celles vues en cours avec les auditeurs ProSE.\\
+Les transparents de cours sont disponibles sur le Campus Numérique de l'ESEO
+\cite[Campus\_ESEO]{CAMPUS}, section « Conception SE ». \\
+
+\subsubsection{Règles de codage en langage Java}
+Le code produit devra respecter les règles suivantes :\\
+\begin{itemize}
+  \item La convention de nommage camelCase avec certains points à préciser :
+        \begin{itemize}
+          \item Tous les noms d'objets, de fonction ou de type seront en anglais ;
+          \item L'indentation sere faite par 4 espaces ;
+          \item Le code sera formaté selon le standard utilisé par l'environnement de développement ;
+          \item La convention Java sera utilisée pour les noms de classes, d'attributs, de méthodes et de variables ;
+          \item La longueur d'une ligne de code ne devra pas dépasser 125 caractères.
+        \end{itemize}
+  \item Les commentaires seront exclusivement en français mais pourront faire appel à des termes anglais.
+\end{itemize}
+
+En cas de doute sur la façon de nommer un objet, d'indenter du code ou de commenter, il faut se référer aux exemples
+fournis dans le dossier « qualite/modeles » du RDP. Si ceux-ci n'éclaircissent pas la situation, il faut alors demander
+l'avis du RQT et appliquer la décision prise dans toutes les situations similaires dans la suite du projet. Il est par 
+ailleurs indispensable pour les développeurs d'échanger entre eux mais aussi avec le RQT sur leurs pratiques et leur 
+compréhension des règles de codage.
+\subsubsection{Règles de traduction de la conception vers du code Java}
+Les règles de traduction de la conception vers du code Java
+devront impérativement suivre celles vues en cours avec les auditeurs ProSE.\\
+
+
+\subsection{Documents internes}
+Tout document interne, n'étant pas considéré comme document livrable,
+n'est pas soumis aux conventions de nommage ni de mise en forme.
+Ces documents internes ne passeront pas par le processus d'édition de
+document cité plus haut (pas de relecture ni de validation). Il est
+entièrement de la responsabilité du responsable du document de vérifier
+son contenu et expliciter synthétiquement son objectif dans son nommage
+et sur l'ENTP.
+\section{Standards, pratiques, conventions et métriques}
+\subsection{But}
+Cette section décrit les standards, pratiques, conventions et métriques
+utilisés pour le projet ProSE.  Ceux-ci ont pour but d'assurer la
+qualité du logiciel tout en fournissant des données quantitatives
+sur le processus d'AQ.
+\subsection{Exigences qualités générales}
+
+\begin{table}[H]
+    \begin{tabular}{|ll|}
+        \hline
+        \multicolumn{2}{|l|}{\cellcolor[HTML]{CCCCCC}Description des exigences qualité}                                                               \\ \hline
+        \multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Liées au produit\\ (par ordre décroissant de priorité)\end{tabular}}         &
+        \begin{tabular}[c]{@{}l@{}}
+            1.    Conformité : le produit livré devra être conforme au dossier de \\spécification livré et livré dans les délais promis.\\
+            2.    Maintenabilité : aptitude du produit à permettre une            \\ maintenance facile, rapide et peu coûteuse.\\
+            3.    Adaptabilité : aptitude de la partie logicielle à supprimer ou  \\ modifier les fonctionnalités existantes, ou en ajouter de nouvelles. \\
+        \end{tabular} \\ \hline
+        \multicolumn{1}{|l|}{\begin{tabular}[c]{@{}l@{}}Liées au processus      \\ (par ordre décroissant de priorité)\end{tabular}} &
+        \begin{tabular}[c]{@{}l@{}}
+            1.    Traçabilité.                                      \\
+            2.    Conformité (au présent PAQL et normes indiquées). \\
+            3.    Simplicité.\end{tabular}                                                                                       \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\subsection{Exigences qualités sur les artefacts} \label{sec:ExQualiArte}
+Pour tous les artefacts remis au client ou consultés par les auditeurs,
+une gestion de version et un suivi des modifications devront être activés
+afin de permettre la fourniture de n'importe quelle version d'un artefact
+de ce type et de pouvoir identifier clairement les modifications apportées
+entre 2 versions.
+\subsubsection{Exigences sur les documents consultables par les auditeurs}
+Concernant les documents "consultables auditeur", tous devront respecter
+la même présentation et respecteront les mêmes modèles de document
+disponibles dans le dossier /qualite/modeles du RDP.
+
+\subsubsection{Exigences sur les documents livrables}
+Tous les documents livrables, avant d'être remis au client devront avoir
+été relus et corrigés. Hormis pour les artefacts de code, une version au format PDF
+doit être disponible pour les livrables lors de leur livraison.\\
+Les critères de qualité sur les documents livrables sont les suivants :
+\begin{itemize}
+    \item Respect du modèle de document et ses champs ;
+    \item Pas plus de deux fautes d'orthographe par page du document ;
+    \item Respect des règles ortho-typographiques ;
+    \item Harmonisation des termes utilisés et de leur typographie (exemple : noms de famille en majuscule...) ;
+    \item Toutes les intégrations UML devront respecter la notation UML \cite[UML\_2.5.1\_2017]{UML}
+\end{itemize}
+
+De plus, le dossier de spécification devra se baser sur la norme IEEE 830 \cite[IEEE\-830\_1998]{830}.
+
+\subsubsection{Exigences sur le code source}
+
+Concernant les codes sources du projet, ils devront respecter les règles de programmation
+et les conventions de nommage associées. Le code source livré devra être compilable et pouvoir 
+produire un exécutable fonctionnel. Afin de permettre une meilleure maintenabilité
+et lisibilité, ils seront documentés en utilisant des balises Doxygen.
+Il y aura au moins les balises balises suivantes dans les artefacts de code :
+\begin{itemize}
+    \item \textbf{@file} : le nom du fichier ;
+    \item \textbf{@author} : le créateur du fichier et développeurs impliqués ;
+    \item \textbf{@brief} : le résumé du contenu du fichier ;
+    \item \textbf{@date} : la date de création du fichier ;
+    \item \textbf{@package} : le package auquel appartient le fichier ;
+    \item \textbf{@copyright} : le lien vers la licence GPL V3.0.
+\end{itemize}
+La balise \textbf{@see} pourra être utilisée pour faire référence à d'autres fichiers.\\
+Les balises \textbf{@todo} et \textbf{@bug} seront utilisées pour signaler les parties du code à revoir. Elles pourront au cas 
+par cas être placées en en-tête du fichier ou bien au plus près de la localisation du bug ou des améliorations
+à réaliser.\\
+L'utilisation d'autres balises Doxygen est possible si nécessaire.\\
+
+Le modèle de documentation à suivre sera celui des fichiers exemples (cf. section \ref{sec:ArtefCode}). Le
+fichiers de configuration « Doxyfile » devra être utilisé afin de produire la documentation des codes sources.
+
+\section{Revues et Audits} \label{sec:RevEtAudit}
+
+\subsection{But}
+Cette section présente les actions d'audit interne, externe et de revue qui
+pourront être menées afin d'évaluer la qualité du projet, et ce sur
+différentes activités.
+\subsection{Revues}
+\subsubsection{Revue de mi-avancement}
+La revue de mi-avancement permet de présenter l’ensemble des actions menées sur le premier incrément du cycle en V aux acteurs externes au projet. Un ensemble de détails est présenté sur le Wiki ProSE \cite[Wiki ProSE]{WIKI}. Tous les membres de l’équipe doivent être présents et intervenir durant la présentation. L’équipe disposera de 20 minutes de présentation et de 5 minutes de démonstration, suivies de 25 minutes de questions.
+\subsubsection{Revue de recette}
+De même que pour la revue de mi-avancement, les précisions ont été faites
+sur le site du Wiki ProSE \cite[Wiki ProSE]{WIKI}.
+Tous les membres de l'équipe doivent être présents et intervenir durant la
+présentation. L'équipe disposera de 20 minutes de présentation, dont 5 minutes
+de démonstration, suivies de 30 minutes de questions.
+\subsection{Audits} \label{sec:Audits}
+Des audits externes seront menés par les consultants Formato durant toute
+la vie du projet. Un planning prévisionnel des audits est donné sur l'ENTP.
+Toutefois, les dates d'audit ne sont données qu'à titre indicatif, les
+auditeurs pouvant décaler leur audit d'une ou deux séances suivant leurs
+disponibilités. L'ordre de passage des équipes des audits au cours d'une
+séance n'est d'ailleurs jamais connu et reste à la discrétion de l'auditeur.
+L'équipe est tenue de mettre à disposition un membre compétent lors des
+audits externes.\\
+Il y a 2 types d'audits externes :
+\begin{itemize}
+    \item Les audits consultatifs
+    \item Les audits normatifs
+\end{itemize}
+Lors de chacun de ces audits, l'équipe devra fournir un membre ayant le rôle
+de secrétaire qui prendra en notes les remarques et les changements à
+effectuer qui seront cités lors de l'audit. Le compte-rendu de cet audit
+sera déposé ensuite sur le RDP dans le dossier /gestion\_projet/audit sous
+le nom :  "A(C ou N)\_REF\_\teamNumber", où REF est la référence de la phase projet
+ou du livrable audité.
+
+\subsubsection{Audit consultatif}
+Les consultants vous donneront une indication sur le travail que vous avez
+fait sous forme de code couleur (grade) sur l'avancement de votre projet.
+La signification des grades est la suivante :
+\begin{itemize}
+    \item Le grade OR est attribué à des travaux de qualité exemplaire ;
+    \item Le grade VERT est attribué à des travaux satisfaisants (de corrects à très bons) ;
+    \item Le grade ORANGE est attribué à des travaux présentant quelques lacunes mais ne portant pas de préjudice grave pour la suite du projet ;
+    \item Le grade ROUGE est attribué à des travaux déficients, présentant des lacunes importantes et dommageables pour le projet.
+\end{itemize}
+L'audit consultatif n'est pas noté et n'est pas transmis au client.
+
+\subsubsection{Audit normatif}
+Cet audit nécessite une présentation soignée des documents audités. Il
+faut à minima que les remarques faites lors de l'audit consultatif
+correspondant aient été prises en compte et corrigées. Un code couleur
+(le même que pour un audit consultatif) est attribué.\\
+
+Le rapport d'audit normatif est transmis au client et sera pris
+en compte pour l'évaluation finale du projet.
+
+\subsubsection{Inspections internes} \label{sec:Insp}
+Des inspections internes sur le respect des règles énoncées dans ce PAQL
+et plus particulièrement dans la section \ref{sec:Documentation} seront menées régulièrement.
+Une vérification de l'ENTP sera réalisée par le CdP et/ou le RQT  et les erreurs
+détectées seront mentionnées dans un classeur collaboratif partagé, accessible
+depuis un navigateur web via un lien disponible sur le canal « qualite » de l'outil de communication interne de l'équipe (cf. \ref{sec:ComInterne}). Une version au format PDF est également
+disponible sur le RDP dans le dossier "qualite" et mis à jour tous les mois. Le but de ce relevé est de prendre
+connaissance des erreurs de chacun pour ne pas les reproduire.
+Des inspections de code seront également menées régulièrement sur les
+fichiers publiés sur le RDP à l'aide de l'outil de gestion de version utilisé. Tout dysfonctionnement détecté sera
+enregistré sur l'ENTP (cf. \ref{sec:NotifProb}) et notifié à l'ensemble de l'équipe qui devra
+apporter les modifications nécessaires à la remise en conformité du document.
+
+\subsubsection{Revue croisée} \label{sec:Rev}
+Afin de valider la rédaction d'un document livrable ou d'un artefact de
+code, il conviendra d'organiser une inspection croisée à l'initiative du
+responsable du document, du CdP ou du RQT. Le but est de favoriser la
+détection des erreurs et d'apporter d'autres expertises sur le document
+concerné. Il est de la responsabilité du responsable du document de designer la/les personne.s
+chargée.s des relectures. Par ailleurs, des relectures collectives pourront également être
+envisagées sous les même modalités. Ces opérations de relectures seront
+renseignées dans des demandes Redmine dédiées.
+
+\section{Test}
+Les activités de test seront menées selon le plan de test \cite[\refPlanTest]{PDT} 
+disponible sur le RDP.
+
+\section{Notification des problèmes et corrections} \label{sec:NotifProb}
+La notification des problèmes, à toute étape du processus de
+développement, se fait directement sur l'ENTP par chaque membre de l'équipe.
+Cela se fait par la création d'une demande de type « bug » sur l'ENTP.\\
+Les états possibles d'une demande dysfonctionnement sont :
+\begin{itemize}
+    \item Nouveau
+    \item En cours
+    \item En attente de prise en charge
+    \item Résolu
+    \item Fermé
+\end{itemize}
+
+Lorsqu'un membre de l'équipe détecte un dysfonctionnement et le renseigne, celui-ci est [\textbf{Nouveau}]. Le détecteur du dysfonctionnement doit alors le décrire le plus précisément possible. Il devient [\textbf{En attente d'assignation}] \\
+
+S'il s'agit d'un dysfonctionnement déjà connu réouvert, il est aussi [\textbf{En attente d'assignation}].
+
+S'il est pris en charge, il passe à l'état [\textbf{En cours}]. Sinon, il passe à l'état [\textbf{Fermé}]. 
+
+Si la correction arrive à son terme, il devient [\textbf{Résolu}].
+Dans le cas où la correction est impossible, quelle qu'en soit la raison, l'état deviendra [\textbf{Fermé}].\\
+
+Le diagramme ci-dessous permet d'illustrer les différents états possibles d'un dysfonctionnement :
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=\textwidth]{etatDysfonctionnement}
+    \caption{Diagramme d'état du traitement d'un dysfonctionnement}
+\end{figure}
+
+C'est le chef de projet et/ou le responsable qualité-test (entité compétente) qui décideront de l'assignation des membres aux dysfonctionnements qui seront détectés. Le diagramme suivant permet d'illustrer l'activité des membres impliqués dans le cycle de vie d'un dysfonctionnement :
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=\textwidth]{processTraitementDysfonctionnement}
+    \caption{Diagramme d'activité décrivant la gestion d'un dysfonctionnement}
+\end{figure}
+
+\underline{Remarque} : si le dysfonctionnement concerne un artefact de code et que l'emplacement du bug est connu,
+la balise Doxygen @bug devra être placée par l'observateur du dysfonctionnement pour le notifier. Un commentaire accompagnera la balise 
+avec le numéro du bug correspondant ainsi qu'une description de celui-ci. De plus, la gestion des dysfonctionnements de ce genre 
+comportera également une procédure particulière. Si la branche où se situe le problème est la branche principale, le correcteur devra
+créer une branche selon le format suivant : "\#\emph{<numéro de la tâche bug>}-bugfix-\emph{<initiales du correcteur>}-\emph{<description succincte du problème à corriger>}". Par exemple, "\#4321-bugfix-ec-driver-can-send-segfault".
+Une fois le dysfonctionnement résolu, le correcteur informera le RQT et/ou le CdP qui autoriseront ou non la fusion de la branche sur 
+le RDP. L'état du dysfonctionnement devra être mis à jour sur l'ENTP en fonction de la décision prise.
+
+\section{Outils, Techniques et Méthodologie}
+\subsection{L'espace Numérique de Travail du Projet (ENTP)}
+L'ENTP est un espace vous offrant les outils suivants :
+\begin{itemize}
+    \item Redmine : un gestionnaire de suivi de projet ;
+    \item WikiProse : Wiki contenant un ensemble d'informations sur le projet ProSE, Wiki proposé par l'équipe pédagogique ;
+    \item Le RDP (Référentiel Document Projet) : c'est le dépôt du gestionnaire de versions utilisé.
+\end{itemize}
+L'ENTP est accessible de la même façon à l'intérieur et à l'extérieur de l'ESEO (sous réserve d'avoir correctement configuré le VPN dans le deuxième cas).\\
+Les identifiants réclamés sur Redmine correspondent aux identifiants ESEO
+(adresse mail et mot de passe).\\
+Résumé des URL pour les différents composants de l'ENTP :
+
+\begin{table}[H]
+    \begin{tabular}{|l|l|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        Composants      & URL                                                                                                       \\ \hline
+        Redmine         & \href{https://172.24.2.6/}{https://172.24.2.6/}                                                           \\ \hline
+        WikiProSE       & \href{https://172.24.2.6/projects/se2024-b2/wiki}{https://172.24.2.6/projects/se2024-b2/wiki}             \\ \hline
+        Tableau de bord & \href{https://172.24.2.6/projects/se2024-b2}{https://172.24.2.6/projects/se2024-b2}                       \\ \hline
+        RDP             & \href{https://172.24.2.6/projects/se2024-b2/repository}{https://172.24.2.6/projects/se2024-b2/repository} \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{Redmine}
+Redmine est un gestionnaire de projet ayant comme fonctionnalités :
+\begin{itemize}
+    \item La gestion de plusieurs projets paramétrables ;
+    \item La gestion des utilisateurs ;
+    \item La gestion de documents ;
+    \item La gestion de demandes ;
+    \item Les priorités paramétrables d'une demande ;
+    \item Un historique ;
+    \item La modulation fine des statuts et la gestion des transitions de statuts par rôle ;
+    \item L'ajout de champs personnalisés ;
+    \item La gestion du temps.
+\end{itemize}
+
+\subsubsection{Mise à jour de l'ENTP}
+Lorsqu'un travail significatif a été effectué sur une tâche donnée, le
+document associé devra être synchronisé avec le RDP en appliquant la
+procédure de dépôt détaillée dans le PAQL (cf. \ref{sec:RefDocuments}).
+La saisie de ces tâches conditionne le bon suivi du travail de chaque membre
+de l'équipe par le CdP et le RQT. Le temps passé sur une tâche doit être renseigné
+sur l'ENTP et le status et/ou l'avancement de la tâche mis à jour.\\
+
+\newpage
+\subsubsection{Planning prévisionnel}
+
+La version détaillée du planning prévisionnel est à saisir sur Redmine,
+par le biais de demandes de type « Version ». Ces demandes sont à
+hiérarchiser pour offrir une lecture du plus global au plus détaillé.
+Par exemple :
+\begin{itemize}
+    \item Spécifications
+    \begin{itemize}
+        \item Cas d'utilisation
+        \item Cas d'utilisation stratégique
+        \item IHM
+        \item Rédaction du dossier
+    \end{itemize}
+\end{itemize}
+Ces phases servent à structurer le planning prévisionnel du projet.
+A ce titre, les informations à saisir sont généralement
+(à adapter selon les situations) :
+\begin{itemize}
+    \item titre et description
+    \item date de début et échéance
+    \item relation de dépendances avec d'autres phases projet (précède, suit, …)
+    \item saisie de temps
+\end{itemize}
+Les activités proprement dites sont suivies par le biais de demandes
+de type « tâche » qui :
+\begin{itemize}
+    \item ne doivent pas être hiérarchisées par rapport aux membres
+    \item doivent être affectées à une et une seule personne pour laquelle elle représente le travail à faire
+    \item sont dupliquées autant que nécessaire si plusieurs personnes effectuent le même travail
+\end{itemize}
+
+Cependant, les demandes de type « réunion » peuvent être partagées parmi les membres de l'équipe ayant participé à la réunion concernée.\\
+
+Pour le bon fonctionnement et une bonne gestion du projet, seul le chef de projet est
+autorisé à modifier le planning prévisionnel. Le CdP est donc le seul responsable de
+la concordance dans le temps du planning prévisionnel. Néanmoins, les autres membres
+de l'équipe sont autorisés à modifier, ajouter/supprimer ou modifier une tâche tout
+en respectant la structuration de tâches imposée par le CdP, et ceci pour garder une
+cohérence dans l'ensemble des tâches réalisées au cours du projet.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=13cm]{planningPrevisionnel}
+    \caption{Diagramme de Gantt du planning prévisionnel}
+\end{figure}
+
+\subsubsection{Suivi du travail}
+\subsubsubsection{Une mise à jour immédiate sur le RDP}
+À chaque fois qu'un membre effectue un travail (en séance ou hors séance),
+il doit saisir le temps qu'il y a consacré sur l'ENTP par le biais de
+ses demandes de type "tâche" et compléter son état d'avancement.
+De plus, il devra alors déposer la nouvelle version de ces
+artefacts projet sur le RDP.\\
+\underline{Remarque} : la seule preuve du temps consacré à une tâche est le dépôt
+des artefacts. Un temps saisi sur l'ENTP sans dépôt associé peut ne
+pas être pris en compte par le CdP ou les consultants lors des audits
+"projet".\\
+De plus, une réunion d'équipe projet est organisée de façon hebdomadaire.\\
+Cette réunion a pour but de faire un point sur le travail de la semaine et de tenir à jour l'avancée du projet et ainsi établir les objectifs
+de la semaine à venir. Avant chacune de ces réunions, un ordre du jour est
+envoyé à chacun des membres de l'équipe à minima 48 h avant le début de la
+réunion et chacun doit le lire et en prendre connaissance avant la réunion.
+Lors de chacune de ces réunions, un secrétaire est désigné pour rapporter
+les éléments importants abordés et les publier sous forme de compte-rendu
+sur le RDP dans le dossier gestion de projet.
+
+\subsubsubsection{Synthèse Personnelle}
+Une synthèse du temps passé (dite synthèse personnelle) devra être
+régulièrement mise à jour sur le wiki de l'ENTP. Il sera demandé de
+remplir définitivement et impérativement la synthèse personnelle
+avant les audits individuels.\\
+
+Le but est de fournir un aperçu général des activités effectuée dans
+le projet. Contrairement au Redmine, cette synthèse ne devra pas être détaillée
+et devra faire apparaître le temps passé ainsi que la part de travail réalisé sous
+forme d'un pourcentage. \\
+
+Un modèle de synthèse personnelle est disponible sur le RDP de l'équipe {\teamNumber} \cite[Modèle fiche synthèse]{SYNTH}. 
+Cet exemple devra être suivi et pourra être amélioré au fil du temps en fonction des propositions de l'équipe projet.
+
+\subsection{Liste des outils autorisés}
+Voici la liste de tous les outils que l'équipe projet
+est autorisée à utiliser lors du projet.\\
+
+\begin{table}[H]
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        \textbf{Usage}                    & \textbf{Outil utilisé}   & \textbf{Version}                 \\ \hline
+        Editeur de texte                  & Visual Studio Code       & 1.78                             \\ \hline
+        Générateur de document            & LaTeX et pdfTex          & pdfTeX 3.141592653-2.6-1.40.22   \\ \hline
+        Diagrammes UML                    & PlantUML (jar)           & 1.2023.2                         \\ \hline
+        Gestion de version                & Git                      & 2.34.1                           \\ \hline
+        Tableur                           & Microsoft Excel 365      & 2021                             \\ \hline
+        Présentation/Soutenance de projet & Microsoft PowerPoint 365 & 2021                             \\ \hline
+        Développement sous Android        & Android Studio           & 2022.1.1                         \\ \hline
+        Développement C/Linux Embarqué    & Visual Studio Code       & 1.78                             \\
+                                          & STM32CubeIDE             & 1.12                             \\ \hline
+                                          & CLion                    & 2023.1.1                         \\ \hline
+        Documentation du code C et Java   & Doxygen                  & 1.9.6                            \\ \hline
+        Tests unitaires en C              & Ceedling                 & 0.31.1                           \\
+                                          & CMocka                   & 1.1.6                            \\ \hline
+        Tests unitaires en Java           & JUnit                    & 5                                \\ \hline
+        Tests protocole de communication  & Apache JMeter            & 5.5                              \\ \hline
+    \end{tabular}
+\end{table}
+
+\section{Contrôle des médias}
+\subsection{Communiquer entre membres internes du projet} \label{sec:ComInterne}
+La communication en interne s'effectue sur la plateforme Discord.
+Teams est essentiellement utilisé pour communiquer avec le client et les consultants.
+Discord est mis à profit pour tous les échanges techniques nécessaires
+à la réalisation du projet. Celui-ci est organisé comme ceci :
+
+\begin{table}[H]
+    \begin{tabular}{|l|l|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        Canal                  & Description                                                           \\ \hline
+        %\#objectifs-de-la-semaine   & Espace à disposition du CdP afin de préciser des objectifs communs ou    \\
+        %                           & individuels de manière hebdomadaire                                      \\ \hline
+        \#général              & Espace destiné à la communication et aux échanges concernant          \\
+                               & les annonces pour tout l'espace de travail.                           \\ \hline
+        \#spécification        & Espace de communication destiné aux échanges liés à l'élaboration     \\
+                               & du dossier de spécification. Il est composé de threads d'échanges     \\
+                               & pour les sous-parties du dossier de spécification                     \\ \hline
+        \#conception           & Espace de communication destiné aux échanges liés à l'élaboration     \\
+                               & du dossier de conception                                              \\ \hline
+        \#développeurs-c       & Espace de communication réservé aux développeurs C                    \\ \hline
+        \#développeurs-android & Espace de communication réservé aux développeurs Android              \\ \hline
+        \#questions            & Espace de communication réservé aux questions diverses                \\ \hline
+        \#conseils             & Espace de partage d'outils, extensions, raccourcis et autres conseils \\ \hline
+        \#tests                & Espace d'échanges à propos des tests                                  \\ \hline
+        \#exploration-c        & Espace d'échanges à propos des explorations C                         \\ \hline
+        \#exploration-java     & Espace d'échanges à propos des explorations Java Android              \\ \hline
+        \#documentations       & Espace de partage et stockage de documents                            \\ \hline
+        \#qualite              & Espace de diffusion et d'échange sur les règles qualité               \\ \hline
+        \#archives             & Espace de stockage d'archives (zip, tar...)                           \\ \hline
+        \#temporaire           & Espace de stockage temporaire                                         \\ \hline
+
+        %\#hors-sujet                & Espace de communication destiné à tout ce qui ne concerne pas            \\
+        %                            & les sujets traités sur les autres canaux                                 \\ \hline
+        %\#salon-client              & Espace qui peut être utilisé pour évoquer et synthétiser les questions à \\
+        %                            & poser au client                                                          \\ \hline
+        %\#Redmine                   & Espace destiné aux questions/réponses liées à des problématiques sur le  \\
+        %                            & Redmine et/ou à l'organisation de celui-ci                               \\ \hline
+        %\#réunions                  & Organisation de réunions et communication des ordres du jour             \\ \hline
+    \end{tabular}
+\end{table}
+
+Chaque membre a accès aux canaux de communication liés à ses fonctions au
+sein de l'équipe projet ainsi qu'aux canaux communs. Il est également possible
+pour chaque membre de communiquer directement et personnellement avec
+d'autres membres de l'équipe \teamNumber.
+Le dépôt de documents est possible et autorisé sur cet outil. Néanmoins, il ne
+remplace pas le dépôt sur le RDP.
+
+\subsection{Gestion des médias, sources, références, copyright}
+Pour tous les documents utilisés et créés par l'équipe \teamNumber, l'utilisation
+de sources externes au projet est autorisée à la seule condition que chaque
+membre utilisant ces sources ait pris le soin de vérifier les droits
+d'utilisation et de diffusion de cette source ainsi que les normes de
+copyright associées. Dans le cas contraire, la source devra être
+supprimée et remplacée. \\
+
+Pour l'utilisation d'image, schéma ou tout autre document non textuel, une
+légende descriptive est à rajouter en dessous du document inséré. \\
+
+
+\subsection{Communiquer avec des membres externes au projet}
+\subsubsection{Contacter les consultants}
+Les consultants devront être contactés en priorité par mail. Les règles relatives au 
+contact des consultants sont disponibles sur le Wiki ProSE \cite[Wiki ProSE]{WIKI}. 
+Toute la correspondance avec les consultants doit être archivée sur la boite mail suivante : {\teamMail} \\
+
+\subsubsection{Contacter le client}
+Toute la correspondance mail avec le client doit être archivée dans le compte mail suivant  : {\teamMail} \\
+
+Pour garantir une communication optimum entre le client et l'équipe projet,
+seul le chef de projet dispose des droits pour communiquer avec le client.
+Les différents membres de l'équipe devront regrouper les questions pour le
+client lors des réunions d'équipe hebdomadaires pour que le chef de projet
+puisse les transmettre au client (en cas d'urgence, contacter le chef de
+projet directement).\\
+
+De plus, pour l'écriture d'un mail qu'il juge important, le chef de projet 
+pourra demandera au RQT une relecture de ce mail avant l'envoi au client.\\
+
+\section{Contrôle des fournisseurs}
+Le cabinet de conseil Formato forme et conseille les équipes des projets
+ProSE. Ainsi, certaines formations sont obligatoires et gratuites, tandis
+que d'autres sont payantes et facultatives. De plus, Formato propose
+aussi un service consulting sur la plupart des domaines abordés durant
+le projet. La liste des consultants et de leurs spécialités est disponible
+au chapitre Consultants et Auditeurs tandis que les procédures d'inscription
+aux formations et de demandes de consulting sont détaillées ci-après.
+
+\subsection{S'inscrire à une formation}
+Toute demande de formation doit être décidée en accord avec le CdP.
+Ce dernier transmettra la demande d'inscription au plus tard 48 heures
+avant le début de la formation.\\
+
+Toutes les demandes effectuées par le chef de projet sont enregistrées
+et archivées dans un document spécifique. Les éléments suivants seront
+à indiquer : la date, le sujet de formation, nom du formateur, durée,
+nombre de membres inscrits, présence des membres inscrits.
+
+\subsection{Demander un consulting}
+Pour demander un consulting, il est important de prendre un rendez-vous même si le consultant est planifié sur la séance ProSE.
+En dehors des séances, les consultants ne sont pas nécessairement disponibles et il faut impérativement envoyer une demande par
+email avec un préavis de 48 heures. Il est important de respecter les consignes de rédaction des mails
+dont le sujet doit respecter un format particulier. \\
+
+Tout consulting effectué par le chef de projet ou l'équipe est enregistré et
+archivé dans un document spécifique par le chef de projet. Les éléments
+suivants seront à indiquer : la date, le sujet de formation, nom du formateur,
+durée ainsi que les coûts de consulting.
+
+Un ordre du jour et un compte-rendu
+pourront être rédigés et déposés sur le RDP conformément aux règles établies
+pour le dépôt de document.
+
+Toute prise de rendez-vous de consulting se fait par une demande auprès
+du CdP,  avec autorisation du CdP et reporting auprès du CdP pour garder
+une trace des consulting effectués pour permettre a minima au CdP de
+tenir à jour la liste des dépenses de consulting. Les consultings sont inscrits sous forme de sous-demande Redmine
+appartenant à la tâche parente "Consultings". \\
+
+\section{Collecte, maintenance et conservation des archives}
+\subsection{Le Référentiel Documentaire Projet (RDP)}
+Le RDP est le dépôt de tous les artefacts numériques du projet. Il
+est impératif que tous les artefacts numériques produits lors du
+projet y soient stockés sans délais. Ces artefacts seront pris en
+charge par un système de gestion de version, de sorte qu'il sera
+possible de revenir à n'importe quelle version de ces artefacts.
+Le RDP est composé de trois référentiels structurés en différents dossiers présentés ci-dessous.
+
+\subsubsection{Référentiel pour le code C}
+Code : contient tous les fichiers sources C, ainsi que les fichiers permettant leur édition,
+modification, débogage, test et compilation. Les fichiers objets et exécutables n'y sont pas
+sauvegardés. Ce répertoire est décomposé en 3 dossiers :
+\begin{itemize}
+    \item exploration : Tous les fichiers utilisés en phase d'exploration.
+          Ces fichiers ne sont pas soumis au respect des
+          conventions de qualités du présent PAQL.
+    \item production : Tous les fichiers permettant la réalisation
+          des logiciels pour le client (toutes les versions)
+          \begin{itemize}
+              \item bin : fichier(s) binaire(s) exécutable(s) (non mise en ligne sur le RDP)
+              \item doc : documentation Doxygen
+              \item src : code source :
+                    \begin{itemize}
+                        \item main : code permettant l'exécution de l'application C
+                        \item test : tests du code de l'application
+                    \end{itemize}
+          \end{itemize}
+\end{itemize}
+
+\subsubsection{Référentiel pour le code Android}
+Code : Contient tous les fichiers sources Java, ainsi que les fichiers permettant leur
+édition, modification, débogage, test et compilation. Les fichiers objets et exécutables
+n'y sont pas sauvegardés. Ce répertoire est décomposé en 3 dossiers :
+\begin{itemize}
+    \item Exploration : Tous les fichiers utilisés en phase d'exploration.
+          Ces fichiers ne sont pas soumis au respect des
+          conventions de qualités du présent PAQL.
+    \item Production : Tous les fichiers permettant la réalisation
+          des logiciels pour le client (toutes les versions)
+          \begin{itemize}
+              \item bin : fichier(s) binaire(s) exécutable(s) (non mise en ligne sur le RDP)
+              \item doc : documentation Doxygen
+              \item src : code source :
+                    \begin{itemize}
+                        \item main : code permettant l'exécution de l'application Java Android
+                        \item test : tests du code de l'application
+                    \end{itemize}
+          \end{itemize}
+\end{itemize}
+
+\subsubsection{Référentiel pour les document}
+Il contient tous les documents non relatifs au code du projet.
+\subsubsubsection{Référentiel pour le dossier de spécification}
+\begin{itemize}
+    \item ebauches : contient tous les fichiers du contenu textuel utilisés au
+          cours de la constitution du dossier de spécification.
+    \item figures : contient tous les fichiers images utilisés au
+          cours de la constitution du dossier de spécification.
+    \item livrables : documents dès qu'ils ont atteint
+          une première fois l'état « en attente de validation » ainsi que
+          toutes leurs révisions ultérieures.
+    \item schémas : contient tous les codes sources des différents diagrammes 
+          produits utilisés dans le dossier de spécification.
+\end{itemize}
+
+
+\subsubsubsection{Référentiel pour le dossier de conception}
+Même structuration que pour le dossier de spécification, à l'exception d'un dossier 
+supplémentaire animUML contenant le modèle réalisés avec l'outil animUML.
+
+\subsubsubsection{Référentiel pour la gestion de projet}
+\begin{itemize}
+    \item audit : les compte-rendus des différents audits
+    \item budget : classeur du budget du projet
+    \item client :
+    \begin{itemize}
+        \item contrat : contrat signé avec le client
+    \end{itemize}
+    \item planning : les plannings du projet (en particulier ceux des audits et des formations)
+    \item reunion : les compte-rendus des différentes réunions
+\end{itemize}
+
+\subsubsubsection{Référentiel pour la qualité}
+Cette partie regroupe tous les documents liés à la gestion de la qualité du projet.
+Même structuration que pour le dossier de spécification avec en plus un dossier modeles contenant
+différents exemples de code et outils à utiliser lors du projet. \\
+
+\subsubsubsection{Référentiel pour la partie test}
+Regroupe tous les artefacts liés à l'activité de
+test (Cahier et plan de test).
+
+\subsubsection{Nom des fichiers des artefacts}
+Seules les lettres non accentuées de l'alphabet latin
+(haut de casse, bas de casse et tirets) et les chiffres sont autorisés pour
+le nom du fichier. Le nom du fichier doit se terminer par la
+référence du document (cf. section \ref{sec:RefDocuments}).
+
+\subsubsection{Déposer un artefact sur le RDP} \label{sec:DepotRDP}
+Un artefact de code doit au moins compiler pour être éligible à un
+dépôt sur la branche principale (master). Des branches de travail peuvent être créées pour
+les travaux en cours. Le cas échéant, celles-ci devront être nommées selon la convention 
+suivante : "\#\emph{<numéro de tâche>}-dev-\emph{<initiales du créateur de la branche en minuscules>}-\emph{<description succincte de la fonctionnalité>}". Par exemple, "\#1234-dev-ec-interface-driver-can" respecte les règles évoquées.\\
+
+Lors d'un dépôt, il est impératif de fournir un message sous la forme suivante : 
+"\#\emph{<numéro de tâche>} Description brève des modifications réalisées". 
+Par exemple, "\#1234 Développement interface driver CAN".\\
+
+\subsection{Gestion des documents papier}
+Afin de garder toutes traces du travail effectué, les documents
+papier seront stockés dans une chemise intitulée : Projet \projectName, chemise
+conservée par le CdP.\\
+
+A l'intérieur, il sera retrouvé la même classification que le
+premier niveau du RDP. \\
+
+Si cela est matériellement possible, l'auteur du document papier
+pourra faire une copie numérisée du document et la déposer sur
+le RDP pour en garder une trace supplémentaire\\
+
+\section{Formation}
+Si des compétences requises par le projet ne sont pas maîtrisées
+par suffisamment de membres dans l'équipe, les membres veilleront
+à acquérir ces compétences par le biais de lectures, de formations
+entre les membres, par des consulting auprès des consultants
+Formato ou par des participations à des formations proposées
+par la société Formato.\\
+
+\newpage
+\section{Gestion du risque}
+Une analyse des risques ainsi que des mesures préventives et correctives a été établie ci-dessous
+afin d'anticiper aux mieux les différents risques susceptibles de mettre en péril le projet.\\
+%TODO mise en forme plus lisible si possible
+F : Fréquence    \\
+G : Gravité      \\
+R : Risque       \\
+\begin{table}[H]
+    \begin{tabular}{|p{45mm}|p{3mm}|p{3mm}|p{3mm}|p{55mm}|p{13mm}|p{13mm}|}
+        \hline
+        \rowcolor[HTML]{CCCCCC}
+        Risque                                                        & F   & G   & R  & Mesures correctives                         & F revue & G revue \\ \hline
+        Indisponibilité de l'équipe sur plusieurs séances             & 3   & 2   & 6  & {Non traité}                                & {}      & {}      \\ \hline
+        Pandémie/Confinement                                          & 2   & 4   & 8  & {Non traité}                                & {}      & {}      \\ \hline
+        Perte ou corruption de données                                & 3   & 5   & 15 & Gestion de version et formation de l'équipe & {2}     & {1}     \\ \hline
+        Disponibilité des cibles                                      & 3   & 5   & 15 & Cible redondante et sauvegarde              & {2}     & {2}     \\ \hline
+        Dossier de spécification non à jour                           & 4   & 3   & 12 & {Non traité}                                & {}      & {}      \\ \hline
+        Retard dans le projet ou planification prévisionnel optimiste & 5   & 4   & 20 & {
+                Suivi du planning de prévision et d'avancement\newline
+                Renégociation des spécifications\newline
+                Points météo régulier pour prévenir des retards\newline
+                Eviter la procrastination
+        }                                                             & {3} & {3}                                                                        \\ \hline
+        Inefficience récurrente de l'équipe                           & 3   & 4   & 12 & {
+                Team building\newline
+                Accompagnement et suivi personnalisé
+        }                                                             & {2} & {4}                                                                        \\ \hline
+        Problème de compétence/technique                              & 5   & 4   & 20 & {
+                Consulting préventif/anticipé\newline
+                Echange de tâches entre membres\newline
+                Stand up meeting à chaque session de travail\newline
+                Veille technologique\newline
+                Coopération entre équipes
+        }                                                             & {}  & {}                                                                         \\ \hline
+    \end{tabular}
+\end{table}
+
+\newpage
+\section{Outils et configurations}
+\subsection{Réseau informatique}
+Le réseau informatique de l'ESEO vous permettra d'accéder à
+internet ainsi qu'à tous les outils cités précédemment. Par
+conséquent, les membres projet sont tenus de respecter la
+charte informatique ESEO (déjà signé lors de l'entrée à l'ESEO).
+L'ENTP étant uniquement accessible depuis le réseau interne de
+l'ESEO, un accès VPN configuré avec les fichiers fournis par l'ESEO permet son
+accès en dehors du réseau. \\
+
+\subsection{Git} \label{sec:Git}
+Git est un logiciel de gestion de versions décentralisé utilisé pour la gestion 
+de versions des travaux réalisés par l'équipe projet. Les règles d'utilisation et procédures de dépôt de document ont été
+établies et abordées dans les sections précédentes. \\
+
+\newpage
+\section{Glossaire : Définitions, acronymes et abréviations}
+% TODO améliorer glossaire
+\begin{longtable}{|p{0.3\linewidth}|p{0.7\linewidth}|}
+    \hline
+    \rowcolor[rgb]{0.753,0.753,0.753} Terme/Acronyme         & Définition   \endfirsthead
+    \hline
+    Audit Consultatif (AC)                                   & Inspection programmée et réalisée par l'équipe de formateurs de la société Formato sur le travail fourni par l'équipe projet. Ne donne pas lieu à une évaluation.                                \\ \hline
+    Audit Normatif (AN)                                      & Inspection programmée et réalisée par l'équipe de formateurs de la société Formato sur le travail fourni par l'équipe projet. Ne donne pas lieue à une évaluation.                               \\ \hline
+    Artefact Projet (AP)                                     & Désigne tous les éléments numériques ou analogiques produits lors du développement du projet (documents numériques ou papier, codes sources, jeux de test, etc.).                                \\ \hline
+    Assurance Qualité (AQ)                                   & Garantie donnée au client et aux formateurs quant à la qualité des livrables et du travail fourni par l'équipe projet.                                                                           \\ \hline
+    Chef de Projet (CdP)                                     & Personnage clef du projet, il planifie, dirige, prend en charge la relation client, le suivi global du projet, l'aspect budgétaire et financier ainsi que les formations nécessaires à l'équipe. \\ \hline
+    Electronic Data Interchange (EDI)                        & En français Échange de données informatisées, c'est le terme générique définissant un échange d'informations automatique entre deux entités à l'aide de messages standardisés.                   \\ \hline
+    Espace Numérique de Travail du Projet (ENTP)             &                                                                                                                                                                                                  \\ \hline
+    Institute of Electrical and Electronics Engineers (IEEE) & Association professionnelle internationale définissant entre autres des normes dans le domaine informatique et électronique.                                                                     \\ \hline
+    Object Management Group (OMG)                            & Association professionnelle internationale définissant entre autres des normes dans le domaine informatique et électronique.                                                                     \\ \hline
+    Plan de Test (PdT)                                       & Document définissant l'activité de test du projet                                                                                                                                                \\ \hline
+    Projet Systèmes Embarqués (ProSE)                        & Projet à but pédagogique, conçu et destiné aux étudiants de l'option Systèmes Embarqués à l'ESEO.                                                                                                \\ \hline
+    Plan d'Assurance Qualité (PAQL)                          & Document de référence relatif à la qualité du travail effectué par l'équipe.                                                                                                                     \\ \hline
+    Référentiel Document Projet (RDP)                        & Dépôt de tous les artefacts numériques du projet. Ce dépôt est mis à la disposition de l'équipe projet, ainsi qu'à l'équipe des consultants Formato.                                             \\ \hline
+    Unified Modeling Language (UML)                          & Notation graphique normalisée définie par l'OMG et utilisé en génie logiciel.                                                                                                                    \\ \hline
+    Wiki ProSE                                               & Ressource documentaire fournie par l'équipe pédagogique de l'option SE de l'ESEO.                                                                                                                \\ \hline
+    Outil d'animation                                        & Logiciel AnimUML développé au sein de l'ESEO                                                                                                                                                     \\ \hline
+    Outils de test                                           & Ensemble de logiciels utilisés pour préparer et réaliser les tests : JMeter, Robotframework, JUnit, Squash, CMocka...                                                                            \\ \hline
+    Outils de rédaction                                      & LaTeX                                                                                                                                                                                            \\ \hline
+\end{longtable}
+
+\newpage
+\section{Validation du document}
+Signature de tous les membres de l'équipe projet, précédée de la mention "J'ai lu et je m'engage à respecter le présent PAQL pendant toute la durée du projet ProSE"\\
+\bigskip
+\begin{longtable}[l]{p{0.45\linewidth}p{0.45\linewidth}}
+    Chef de Projet           & Date     \\ [1\bigskipamount]
+    \dotfill                 & \dotfill \\ [3\bigskipamount]
+    Responsable Qualité-Test & Date     \\ [1\bigskipamount]
+    \dotfill                 & \dotfill \\ [3\bigskipamount]
+    Développeur C            & Date     \\ [1\bigskipamount]
+    \dotfill                 & \dotfill \\ [3\bigskipamount]
+    Développeur C            & Date     \\ [1\bigskipamount]
+    \dotfill                 & \dotfill \\ [3\bigskipamount]
+    Développeur Java         & Date     \\ [1\bigskipamount]
+    \dotfill                 & \dotfill \\ [3\bigskipamount]
+    Développeur Java         & Date     \\ [1\bigskipamount]
+    \dotfill                 & \dotfill \\
+\end{longtable}
+
+
+\end{document}
+%--- END
+

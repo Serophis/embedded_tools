@@ -1,0 +1,9 @@
+# Blocage des pdf et eps, les PDF de livraisons seront forcés
+*.pdf
+*.eps
+*.png
+
+res
+build
+.dependLatex
+.dependPlantuml

@@ -1,0 +1,89 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+    "name": "Ubuntu for ProSE",
+    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+    "build": { "dockerfile": "Dockerfile" },
+    "features": {
+        "ghcr.io/devcontainers/features/python:1": {
+            "installTools": true,
+            "version": "os-provided"
+        },
+        "ghcr.io/devcontainers-contrib/features/jmeter-sdkman:2": {
+            "version": "latest",
+            "jdkVersion": "latest",
+            "jdkDistro": "ms"
+        },
+        "ghcr.io/devcontainers-community/features/llvm:3": {}
+    },
+    // Features to add to the dev container. More info: https://containers.dev/features.
+    // "features": {},
+    // Use 'forwardPorts' to make a list of ports inside the container available locally.
+    // "forwardPorts": [],
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // "postCreateCommand": "uname -a",
+    // Configure tool-specific properties.
+    "customizations": {
+        "vscode": {
+            "settings": {},
+            "extensions": [
+                // C/C++ DEVELOPMENT
+                "llvm-vs-code-extensions.vscode-clangd", // LLVM language server (replaces IntelliSense from C/C++ extension)
+                "xaver.clang-format", // Clang-Format to format C/C++ with .clang-format file
+                "ms-vscode.cpptools", // C/C++ extension
+                
+                // C/C++ BUILD TOOLS
+                "twxs.cmake",
+                "ms-vscode.cmake-tools", // CMake Tools
+                "ms-vscode.makefile-tools", // Makefile Tools
+                "ms-vscode.makefile-tools", // Makefile Tools : syntax highlighting
+                
+                // Git tools
+                "mhutchie.git-graph", // Git Graph
+                "eamodio.gitlens", // GitLens (use free version)
+                
+                "GitHub.copilot", // GitHub Copilot
+                
+                // LATEX
+                "James-Yu.latex-workshop", // Syntax highlighting for LaTeX
+                "mathematic.vscode-latex", // LaTeX Workshop for symbols and equations, but also syntax highlighting
+                
+                // PlantUML
+                "jebbs.plantuml", // PlantUML for syntax highlighting and preview
+                "SimonSiefke.svg-preview", // SVG Preview to render SVG files in VS Code (useful for PlantUML)
+                
+                // MCU DEBUGGING
+                "mcu-debug.memory-view", // MCU Tools
+                "mcu-debug.peripheral-viewer", // MCU Tools
+                "mcu-debug.rtos-views", // MCU Tools
+                "webfreak.debug", // GDB, LLDB & Mago-MI Debugger support for VSCode
+                
+                // PYTHON
+                "ms-python.debugpy", // Python debugging
+                "ms-python.python", // Python standard tools
+                "ms-python.vscode-pylance", // Python language server
+                
+                // COLLABORATION
+                "ritwickdey.LiveServer", // Live Server for web development
+                "ms-vsliveshare.vsliveshare", // Live Share to collaborate with others in real time
+                
+                // YAML
+                "redhat.vscode-yaml", // YAML syntax highlighting and formatting
+                
+                // MARKDOWN
+                "DavidAnson.vscode-markdownlint", // Markdown Lint
+                "shd101wyy.markdown-preview-enhanced", // Markdown Preview Enhanced
+                "yzhang.markdown-all-in-one", // Markdown All in One
+
+                // AnimUML language server requirement
+                "svelte.svelte-vscode", // Svelte for syntax highlighting and auto-completion (usefull for AnimUML development)
+                
+                // MISCELLANEOUS
+                "uctakeoff.vscode-counter", // VS Code Counter to count lines of code (useful for metrics ; source, blank, comments, )
+                "rioj7.command-variable" // Command variable is a simple extension to execute VSCode tasks with user GUI inputs
+            ]
+        }
+    }
+    // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+    // "remoteUser": "root"
+}

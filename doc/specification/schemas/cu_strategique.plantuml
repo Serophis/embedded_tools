@@ -1,0 +1,7 @@
+@startuml
+
+actor :Actor:
+
+Actor ..> (Azerty) : <<include>>
+
+@enduml

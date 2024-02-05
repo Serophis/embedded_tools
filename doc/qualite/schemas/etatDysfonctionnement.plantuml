@@ -1,0 +1,19 @@
+@startuml
+state Nouveau as "Nouveau"
+state Cours as "En cours"
+state Resolu as "Résolu"
+state Ferme as "Fermé"
+state Attente as "En attente\nd'assignation"
+
+[*] -> Nouveau : Création du \ndysfonctionnement
+Nouveau --> Attente : Description du\n dysfonctionnement
+Attente --> Cours : Prise en charge\ndu dysfonctionnement
+Attente --> Ferme : Non prise en charge\ndu dysfonctionnement
+Cours --> Resolu : Résolution du\ndysfonctionnement
+Resolu --> Attente : Dysfonctionnement\nréouvert
+Ferme --> Attente : Dysfonctionnement\nréouvert
+Cours --> Ferme : Insolvabilité du\ndysfonctionnement
+center footer 
+© 2023 Diagram by Eliot Coulon is licensed under CC BY-NC-SA 4.0
+end footer
+@enduml

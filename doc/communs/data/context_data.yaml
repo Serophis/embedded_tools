@@ -1,0 +1,14 @@
+# You can add as many actors as you want using the same syntax
+
+# Alice2Bob => Interactions between Alice and Bob
+#   forward: => Interactons from Alice to Bob
+#     - interactionName: {params: {paramName1: paramType1, paramName2: paramType2}, description: Description of the interaction} => With parameters but without a return type
+#   backward: => Interactons from Bob to Alice
+#     - interactionName: {return: Status, description: Description of the interaction} => Without parameters but with a return type
+  
+Utilisateur2SaE:
+  forward:
+      - askStart: {description: Permet à l'utilisateur de démarrer le système}
+  backward:
+      - displayScreen: {params: {screenId: ScreenId}, description: Affiche l'écran screenId sur l'IHM}
+      - driveLed: {params: {ledMode: LedMode}, description: Pilote la LED avec le mode ledMode}

@@ -1,0 +1,54 @@
+\ProvidesPackage{FooterHeader}
+\RequirePackage{kvoptions}
+
+
+\DeclareStringOption[]{documentSubject}[]
+\DeclareStringOption[]{documentRef}[]
+\DeclareStringOption[]{documentRevision}[]
+\DeclareStringOption[]{documentVersion}[]
+\DeclareStringOption[]{teamName}[]
+\DeclareStringOption[clientLogo.png]{clientLogo}[]
+\DeclareStringOption[companyLogo.png]{companyLogo}[]
+
+\ProcessKeyvalOptions*
+
+\usepackage{fancyhdr}
+
+
+%-----------------------------------------------
+%   Settings for header and footer
+%-----------------------------------------------
+
+\makeatletter
+
+\graphicspath{{figures/}}
+
+\pagestyle{fancy}
+\fancyhf{} % clear all fields
+
+% header
+\fancyhead[LO]{
+    \includegraphics[height=25pt]{\FooterHeader@companyLogo}
+}
+
+\renewcommand{\headrulewidth}{1pt}
+\fancyhead[CO]{\FooterHeader@documentSubject}
+\fancyhead[RO]{Réf. \FooterHeader@documentRef}
+\def\headrule{{\if@fancyplain\let\headrulewidth\plainheadrulewidth\fi
+            \color{black}\hrule\@height\headrulewidth\@width\headwidth \vskip-\headrulewidth}}
+
+% footer
+\ifx\FooterHeader@documentVersion\empty
+\else
+    \fancyfoot[LO]{Version {\FooterHeader@documentVersion} \textbf{--} Révision \FooterHeader@documentRevision}
+\fi
+
+\fancyfoot[CO]{©2023 Droits réservés, \FooterHeader@teamName}
+
+\renewcommand{\footrulewidth}{1pt}
+\fancyfoot[RO]{Page \thepage /\pageref*{LastPage}}
+\def\footrule{{\if@fancyplain\let\footrulewidth\plainfootrulewidth\fi
+            \vskip-\footruleskip\vskip-\footrulewidth
+            \color{black}\hrule\@width\headwidth\@height\footrulewidth\vskip\footruleskip}}
+
+\makeatother

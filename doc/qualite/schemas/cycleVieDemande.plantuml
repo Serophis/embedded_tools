@@ -1,0 +1,35 @@
+@startuml
+[*] --> Members
+
+state "Membre(s) concerné(s)" as Members {
+    state "Nouveau" as New
+    state "En cours" as Current
+    state "En attente d'approbation" as Waiting
+
+    [*] --> New
+    note on link
+        Création d'une tâche
+    end note
+    New --> Current
+    note on link
+        Premier dépôt sur le RDP
+    end note
+    Current --> Waiting
+    note on link
+        Travail terminé et déposé
+    end note
+}
+state "CdP/RQT/Resp doc " as MAJ{
+    state "Relecture" as Reading
+    state "Approuvé" as Approved
+    state "Fermé" as Closed
+
+    Waiting -u-> Reading
+    Reading --> Approved
+    Approved --> Closed
+}
+Closed --> [*]
+center footer
+© 2023 Diagram by Eliot Coulon is licensed under CC BY-NC-SA 4.0
+end footer
+@enduml

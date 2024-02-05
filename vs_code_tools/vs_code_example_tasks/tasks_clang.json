@@ -1,0 +1,46 @@
+{
+    // rename this file tasks.json and add it to .vscode directory or user tasks settings
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "clang-format .c/.h",
+            "type": "shell",
+            "command": [
+                "clang-format -i -style=file ${input:selectDir}/*.{c,h}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "clang-tidy list warnings .c/.h",
+            "type": "shell",
+            "command": [
+                "clang-tidy ${input:selectDir}/*.{c,h} -header-filter=.* -p=file"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+          "id": "selectDir",
+          "type": "command",
+          "command": "extension.commandvariable.pickStringRemember",
+          "args": {
+            "description": "Select directory",
+            "options": [
+              ["Use previous directory", "${remember:srcSubDir}"],
+              ["All", "all"],
+              ["Pick directory", "${pickFile:srcSubDir}"]
+            ],
+            "default": null,
+            "pickFile": {
+              "srcSubDir": {
+                "description": "Which directory?",
+                "include": "**/*.{c,h}",
+                "showDirs": true,
+                "keyRemember": "srcSubDir"
+              }
+            }
+          }
+        }
+      ]
+}

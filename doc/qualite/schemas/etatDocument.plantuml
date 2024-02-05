@@ -1,0 +1,26 @@
+@startuml
+state Redaction as "En cours de rédaction"
+state Relecture as "En relecture"
+state Validation as "En attente de validation"
+state Livrable as "Livrable"
+state Attente as "Attente prochain incrément"
+[*] -> Redaction : Création du doc
+Redaction --> Relecture : Prévalidation du doc\npar Auteur
+Redaction -up-> Redaction : Rédaction d'un paragraphe significatif
+note on link
+    Version X.Y (Y+1)
+end note
+Relecture --> Validation : Doc validé\npar Relecteur
+Validation --> Livrable : Doc validé\npar entité compétente
+note on link
+    Version X.Y (X+1)
+end note
+Relecture --> Redaction : Doc invalidé\npar Relecteur
+Validation --> Redaction : Doc invalidé\npar entité compétente
+Livrable --> Redaction : Doc invalidé\npar Client
+Livrable -> Attente : Doc livré et accepté par Client
+Attente -left-> Redaction : Début nouvel incrément
+center footer
+© 2023 Diagram by Eliot Coulon is licensed under CC BY-NC-SA 4.0
+end footer
+@enduml

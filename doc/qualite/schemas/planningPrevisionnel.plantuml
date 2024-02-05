@@ -1,0 +1,44 @@
+@startgantt
+
+language fr
+
+project starts 2023-02-07
+printscale weekly
+
+-- Phase Projet --
+-- Incrément 1 --
+[Initialisation] starts 2023-02-07 and ends 2023-02-27
+[Spec I1] starts 2023-02-27 and ends 2023-03-17
+[Conception I1] starts 2023-03-18 and ends 2023-04-19
+[Code I1] starts 2023-04-20 and ends 2023-05-12
+[Test I1] starts 2023-03-10 and ends 2023-05-12
+
+-- Incrément 2 --
+[Spec I2] starts 2023-04-19 and ends 2023-05-24
+[Conception I2] starts 2023-04-19 and ends 2023-05-31
+[Code I2] starts 2023-05-14 and ends 2023-06-08
+[Test I2] starts 2023-05-17 and ends 2023-06-09
+
+-- Livrables --
+
+[SPEC_B2 I1] starts 2023-02-09 and ends 2023-03-25
+[PAQL_B2 I1] starts 2023-02-20 and ends 2023-03-10
+[PDT_B2 I1] starts 2023-03-07 and ends 2023-03-25
+[SV_B2 I1] starts 2023-03-10 and ends 2023-03-21
+[CONC_B2 I1] starts 2023-03-21 and ends 2023-04-19
+[CODE_C_B2 I1] starts 2023-04-20 and ends 2023-05-12
+[CODE_JAVA_B2 I1] starts 2023-04-20 and ends 2023-05-12
+
+[SPEC_B2 I2] starts 2023-05-17 and ends 2023-05-24
+[PAQL_B2 I2] starts 2023-03-13 and ends 2023-05-15
+[PDT_B2 I2] starts 2023-05-17 and ends 2023-05-26
+[SV_B2 I2] starts 2023-05-17 and ends 2023-05-26
+[CONC_B2 I2] starts 2023-05-17 and ends 2023-05-31
+[Code_C_B2 I2] starts 2023-05-31 and ends 2023-06-09
+[CODE_JAVA_B2 I2] starts 2023-05-31 and ends 2023-06-09
+
+center footer
+© 2023 Diagram by Eliot Coulon is licensed under CC BY-NC-SA 4.0
+end footer
+
+@endgantt

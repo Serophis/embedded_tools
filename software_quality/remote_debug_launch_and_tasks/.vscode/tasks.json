@@ -1,0 +1,99 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build_all_debug_YOUR_PROJECT",
+            "type": "shell",
+            "command": [
+                "cd YOUR_PROJECT_MAKEFILE_FOLDER;",
+                "YOUR_MAKE_COMMAND_DEBUG"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Build with debug symbols and with no optimizations"
+        },
+        {
+            "label": "build_all_release_YOUR_PROJECT",
+            "type": "shell",
+            "command": [
+                "cd YOUR_PROJECT_MAKEFILE_FOLDER;",
+                "YOUR_MAKE_COMMAND_NODEBUG"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Build with no debug symbols and with optimizations"
+        },
+        {
+            "label": "remote_update_YOUR_PROJECT_executable",
+            "type": "shell",
+            "command": [
+                "set -x;",
+                "source ~/.bashrc;", // Force sourcing of .bashrc because TARGET_IP might have changed
+                "cd YOUR_PROJECT_MAKEFILE_FOLDER;",
+                "sshpass -p ${env:TARGET_PASSWORD} ${env:EXECUTABLE_NAME} ${env:TARGET_LOGIN}@${env:TARGET_IP}:/home/${env:TARGET_LOGIN}"
+            ],
+            "detail": "Transfer the executable to the target /home/user folder using sshpass scp",
+        },
+        {
+            "label": "start_remote_gdbserver_YOUR_PROJECT",
+            "type": "shell",
+            "command": "sshpass -p ${env:TARGET_PASSWORD} ssh ${env:TARGET_LOGIN}@${env:TARGET_ADDRESS} 'sudo gdbserver :{env:GDB_TARGET_PORT} ./${env:EXECUTABLE_NAME} &'",
+            "detail": "Start gdbserver on the target on port {env:GDB_TARGET_PORT}",
+            "isBackground": true,
+            // Problem matcher is required to make the task correctly run in background
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".",
+                        "endsPattern": ".",
+                    }
+                }
+            ]
+        },
+        {
+            "label": "build_all_debug_and_update_YOUR_PROJECT",
+            "type": "shell",
+            "dependsOn": [
+                "build_all_debug_YOUR_PROJECT",
+                "remote_update_YOUR_PROJECT_executable"
+            ],
+            "dependsOrder": "sequence",
+            "detail": "Build with debug symbols and with no optimizations, then transfer the executable to the target using sshpass scp"
+        },
+        {
+            "label": "build_all_release_and_update_YOUR_PROJECT",
+            "type": "shell",
+            "dependsOn": [
+                "build_all_release_YOUR_PROJECT",
+                "remote_update_YOUR_PROJECT_executable"
+            ],
+            "dependsOrder": "sequence",
+            "detail": "Build with no debug symbols and with optimizations, then transfer the executable to the target using sshpass scp"
+        },
+        {
+            "label": "build_all_debug_update_and_start_gdbserver_YOUR_PROJECT",
+            "type": "shell",
+            "dependsOn": [
+                "build_all_debug_and_update_YOUR_PROJECT",
+                "start_remote_gdbserver_YOUR_PROJECT"
+            ],
+            "dependsOrder": "parallel",
+            "detail": "Build with no debug symbols and with optimizations, then transfer the executable to the target using sshpass scp and stat gdb server"
+        }
+    ]
+}

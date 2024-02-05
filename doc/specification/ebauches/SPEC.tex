@@ -1,0 +1,94 @@
+\documentclass[a4paper,11pt,titlepage]{article}
+
+%-----------------------------------------
+%       Settings
+%-----------------------------------------
+
+\input{../../communs/setup.tex}
+
+\newcommand{\version}{0.0} % UPDATE_REGULARLY
+\newcommand{\revision}{0} % UPDATE_REGULARLY
+\newcommand{\documentState}{livrable} % UPDATE_REGULARLY
+\newcommand{\documentName}{Dossier de spécification de \projectName}
+
+\usepackage{lipsum} % For text generation, to be removed
+
+\usepackage{Parameter}
+\addbibresource{SPEC.bib} % Bibliography
+
+\usepackage[
+            documentSubject     = {\documentName},
+            documentRef         = {\refSpec},
+            documentRevision    = {\revision},
+            documentVersion     = {\version},
+            teamName            = {\teamCompany},
+            ]{FooterHeader}
+
+\usepackage[
+            documentSubject         =   {\increment},
+            projectName             =   {\projectName},
+            clientName              =   {\clientName},
+            teamCompany             =   {\teamCompany},
+            documentRevision        =   {\revision},
+            documentVersion         =   {\version},
+            documentState           =   {\documentState},
+            documentManager         =   {\CDP},
+            ]{FrontPage}
+
+\makeglossaries
+\loadglsentries{glossary.tex} % Dictionary
+\loadglsentries{acronyms.tex} % Acronyms
+
+%-----------------------------------------
+%      Variables
+%-----------------------------------------
+\author{\teamName}        % Mandatory
+\title{\documentName}     % Mandatory
+\date{\normalsize\today}    % Mandatory, today's date
+
+\graphicspath{{../schemas/}{../../../communs/figures/}}
+
+%-----------------------------------------
+%      Document
+%-----------------------------------------
+
+\begin{document}
+
+\maketitle
+
+\setcounter{page}{1}
+\vspace*{\fill}
+\noindent
+\underline{\textbf{AVERTISSEMENT:}} \\
+Le présent document est rédigé selon le plan initial de Jérôme DELATOUR qui a accordé l'utilisation de celui-ci à Eliot Coulon le 6 octobre 2023. \\
+\vspace*{\fill}
+\clearpage
+
+\section*{Table des versions}
+\input{tablesVersion.tex} \label{Table des versions} % Add the page with the version tables
+\clearpage
+
+\tableofcontents % The table of contents
+
+%------------------------------------------------------
+%            Introduction
+%------------------------------------------------------
+
+\input{sections/1.Introduction/introduction.tex}    
+
+%------------------------------------------------------
+%            Description Générale
+%------------------------------------------------------
+
+\input{sections/2.DescriptionGenerale/descriptionGenerale.tex}
+
+%------------------------------------------------------
+%            Exigences Spécifiques
+%------------------------------------------------------
+
+\input{sections/3.ExigenceSpecifique/exigencesSpecifique.tex}
+
+
+\listoffigures \label{TableOfFigure} % The table of figures
+
+\end{document}

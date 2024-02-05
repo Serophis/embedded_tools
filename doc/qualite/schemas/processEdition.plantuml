@@ -1,0 +1,33 @@
+@startuml
+|Responsable|
+start
+:Création du document;
+while (Nouvel incrément nécessaire ?) is (oui)
+|Entité compétente|
+while (Contenu à rédiger ?) is (oui)
+    :Attribution du travail à l'auteur/correcteur;
+    |Auteur/Correcteur|
+    :Rédaction de contenu;
+    note: Mettre à jour Y \n table des versions;
+endwhile
+|Entité compétente|
+:Attribuer relecture;
+|Relecteur|
+:Relecture et détection des erreurs;
+while (Erreurs détectées ?) is (oui)
+    :Relecture et détection des erreurs;
+    |Auteur/Correcteur|
+    :Correction des erreurs identifiées;
+endwhile
+|Entité compétente|
+:Validation et livraison du document;
+note: Mettre à jour X \n table des versions;
+|Client|
+:Document livré et accepté;
+endwhile
+|Responsable|
+stop
+center footer
+© 2023 Diagram by Eliot Coulon is licensed under CC BY-NC-SA 4.0
+end footer
+@enduml
