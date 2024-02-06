@@ -1,5 +1,5 @@
 SRC_PLANTUML = $(realpath ../schemas/)
-PLANTUML = java -jar /opt/plantuml/plantuml.jar
+PLANTUML = java -jar /usr/share/plantuml/plantuml.jar
 DEPEND_PLANTUML = ./build/.dependPlantUML
 OUTPUT_PLANTUML = $(SRC_PLANTUML)
 SRC_FILES := $(wildcard $(SRC_PLANTUML)/*.plantuml) $(wildcard $(SRC_PLANTUML)/**/*.plantuml)
