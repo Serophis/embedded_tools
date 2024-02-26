@@ -1,0 +1,11 @@
+{
+	"type": "module",
+	"main": "auls.cjs",
+	"dependencies": {
+		"svgdom": "0.1.13",
+		"svgdom-css": "^0.2.3",
+                "typescript": "^5.0.3",
+                "typescript-template-language-service-decorator": "^2.3.2",
+		"svelte-language-server": "^0.15.9"
+	}
+}

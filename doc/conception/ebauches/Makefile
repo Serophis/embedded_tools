@@ -1,5 +1,5 @@
 # Path vers les modèles
-MODELS_PATH = $(realpath ../animUML/)
+MODELS_PATH = $(realpath ../models/)
 # Liste des modèles à générer (un par répertoire sous MODELS_PATH)
 MODELS := conceptionGenerale
 
