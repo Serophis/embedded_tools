@@ -10,19 +10,19 @@
 	{
 		name: "Conception générale B2 2024",
 		classes: String.raw`
-				class Alice {
+				class Alice <<active>>{
 					AliceHello()			
 				}
 
-				class Bob {
+				class Bob <<active>>{
 					BobHello()
 				}
 
 				enum ScreenId {
-					SCREEN_ID_HOME						'' Identifiant de l'écran d'accueil.
-					SCREEN_ID_MANAGEMENT				'' Identifiant de l'écran Management.
-					SCREEN_ID_CHART						'' Identifiant de l'écran Graphique.
-					SCREEN_ID_AVAILABILITY				'' Identifiant de l'écran Disponibilité.
+					SCREEN_ID_HOME
+					SCREEN_ID_MANAGEMENT
+					SCREEN_ID_CHART
+					SCREEN_ID_AVAILABILITY
 				}
 				
 				Alice *-> Bob : AliceHello()
@@ -32,7 +32,6 @@
 			{
 				name: "Alice",
 				class: "Alice",
-				isActor: true,
 				behavior: String.raw`
 						[*] -> Waiting : / 
 						Waiting : / AliceHello()
@@ -41,7 +40,6 @@
 			{
 				name: "Bob",
 				class: "Bob",
-				isActor: true,
 				behavior: String.raw`
 						[*] -> Waiting : / 
 						Waiting : / BobHello()
@@ -65,12 +63,12 @@
 			},
 		},
 		interactions: {
-			"Hello Alice et bob": String.raw`
-					actor Alice
-					actor Bob
-					Alice -> Bob : AliceHello()
-					Bob -> Alice : BobHello()
-                `,
+			"Hello Alice et Bob": String.raw`
+				participant Alice
+				participant Bob
+				e0 : Alice -> Bob : AliceHello()
+				e1 : Bob -> Alice : BobHello()
+			`,
 		},
 		settings: {
 			interface: {

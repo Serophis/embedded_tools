@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=build/conceptionGenerale.doc.schema.yml
+interactions:
+    "Hello Alice et Bob":
+        specRef: |
+            TODO
+        desc: |
+            TODO
+classifiers:
+    Alice:
+        desc: |
+            TODO
+        operations:
+            AliceHello: |
+                TODO
+        behavior:
+            desc: |
+                TODO
+    Bob:
+        desc: |
+            TODO
+        operations:
+            BobHello: |
+                TODO
+        behavior:
+            desc: |
+                TODO
+    ScreenId:
+        desc: |
+            TODO
+        literals:
+            SCREEN_ID_HOME: |
+                TODO
+            SCREEN_ID_MANAGEMENT: |
+                TODO
+            SCREEN_ID_CHART: |
+                TODO
+            SCREEN_ID_AVAILABILITY: |
+                TODO

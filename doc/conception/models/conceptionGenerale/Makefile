@@ -50,7 +50,7 @@ clean:
 %-crop.pdf: %.pdf
 	pdfcrop "$<"
 
-$(TARGET_BASE)-macros.tex $(AUTO_SVG:.pdf=.svg) $(AUTO_PUML:.pdf=.puml) $(UNUSED_PUML:.pdf=.puml) &: $(MODEL_FILE) $(MODEL_FILE).doc.yml Config.mk
+$(TARGET_BASE)-macros.tex $(AUTO_SVG:.pdf=.svg) $(AUTO_PUML:.pdf=.puml) $(UNUSED_PUML:.pdf=.puml) &: $(MODEL_FILE) $(wildcard $(MODEL_FILE).doc.yml) Config.mk
 	mkdir -p build
 	node $(AU2PU) $< model $(TARGET_BASE) foldedStateFQNs=$(subst $(SPACE),$(COMMA),$(FOLDED_STATES)) narrow=true rawPlantUML=true genActivitiesFor=$(subst $(SPACE),$(COMMA),$(ACTIVITIES)) $(PARAMS)
 
@@ -62,20 +62,21 @@ $(TARGET_BASE)-macros.tex $(AUTO_SVG:.pdf=.svg) $(AUTO_PUML:.pdf=.puml) $(UNUSED
 	rsvg-convert -f pdf "$<" > "$@"
 
 $(AUTO_PUML:.pdf=.svg) $(MANU_PUML:.pdf=.svg) &: $(AUTO_PUML:.pdf=.puml) $(MANU_PUML:.pdf=.puml)
-	plantuml -checkmetadata -nbthread auto -tsvg $?
-	# making sure we do not check metadata again until next change
-	touch $?
+	@# making sure we do not check metadata again until next change by touching ALL targets
+	@touch $(^:.puml=.svg)
+	@# also touching ALL downstream targets, as an attempt to avoid rebuilding them (unless plantuml, below, changes their .svg)
+	@# however, this does not fully work, because make seems to have already read some timestamps
+	@touch $(^:.puml=.pdf)
 
+	@# processing only the updated sources (i.e., all .puml files more recent than the oldest target)
+	plantuml -checkmetadata -nbthread auto -tsvg $?
+
+
+# Remark: dummy target & unnecessary $(DIAGRAMS) dependencies, for compatibility with LaTeX-specific Makefile
 model.tex: $(DIAGRAMS) $(MODEL_FILE) $(LATEX_GEN) $(TARGET_BASE)-macros.tex
 	$(LATEX_GEN) $(MODEL) "$(OBJECTS)" "$(INTERACTIONS)" "$(CLASSES)" "$(ENUMERATIONS)" "$(ACTIVITIES)"
 
-%.pdf: %.tex $(DIAGRAMS)
-	latexmk -lualatex "$<"
-
-# keeping .svg files so that PlantUML can check their metadata, which avoids regenerating them when there is no actual change.
-.SECONDARY: %.svg
-.PRECIOUS: %-cleaned.svg
-
+# keeping the .doc.yml file
 .PRECIOUS: $(MODEL_FILE).doc.yml
 
 .PHONY: all clean
